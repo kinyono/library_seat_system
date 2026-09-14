@@ -13,31 +13,38 @@
             <h1>📚 图书馆座位管理系统</h1>
             <p class="subtitle">高校智慧图书馆 · 座位预约平台</p>
             <form id="loginForm">
-                <!-- 角色选择 -->
-                <div class="form-group">
-                    <label>登录身份</label>
-                    <div class="role-switch">
-                        <label class="role-option">
-                            <input type="radio" name="role" value="student" checked>
-                            <span>🎓 学生</span>
-                        </label>
-                        <label class="role-option">
-                            <input type="radio" name="role" value="admin">
-                            <span>🛡️ 管理员</span>
-                        </label>
-                    </div>
-                </div>
+               document.getElementById('loginForm').addEventListener('submit', function (e) {
+  e.preventDefault();
+  const studentId = document.getElementById('studentId').value.trim();
+  const password = document.getElementById('password').value.trim();
+  if (!studentId || !password) {
+    alert('请填写学号和密码');
+    return;
+  }
 
-                <div class="form-group">
-                    <label for="studentId">账号</label>
-                    <input type="text" id="studentId" class="form-control" placeholder="学生填学号 / 管理员填 admin" required>
-                </div>
+  let users = [];
+  try { users = JSON.parse(localStorage.getItem('lib_users')) || []; } catch (_) { users = []; }
+  let user = users.find(u => u.studentId === studentId);
+  if (!user) {
+    user = { id: Date.now(), name: '用户' + studentId.slice(-4), studentId, credit: 100, banned: false };
+    users.push(user);
+    localStorage.setItem('lib_users', JSON.stringify(users));
+  }
+  if (user.banned) {
+    alert('该账号已被封禁，请联系管理员');
+    return;
+  }
+
+  localStorage.setItem('currentUser', JSON.stringify(user));
+  window.location.href = 'pages/dashboard.html';
+});
+
                 <div class="form-group">
                     <label for="password">密码</label>
                     <input type="password" id="password" class="form-control" placeholder="请输入密码" required>
                 </div>
                 <button type="submit" class="btn-login">登 录</button>
-                <p class="login-tip">管理员演示账号：<b>admin</b> / <b>admin123</b></p>
+             <p class="login-tip">管理员演示账号：<b>admin</b> / <b>admin123</b></p>   
             </form>
             <div class="footer-info">
                 <p>首次使用请联系图书馆管理员激活账号</p>

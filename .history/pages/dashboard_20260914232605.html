@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>座位预约 - 图书馆</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/dashboard.css">
+</head>
+<body>
+    <!-- 顶部导航 -->
+    <nav class="navbar">
+        <div class="navbar-brand">📚 图书馆座位</div>
+        <div class="navbar-user">
+            <span class="username" id="userName">用户</span>
+            <span class="credit-badge">💳 <strong id="userCredit">100</strong> 分</span>
+            <button class="btn-logout" onclick="logout()">退出</button>
+        </div>
+    </nav>
+
+    <!-- 主布局 -->
+    <div class="dashboard-layout">
+        <!-- 左侧主区域 -->
+        <div class="main-area">
+            <!-- 楼层切换 -->
+            <div class="floor-tabs">
+                <button class="floor-btn active" data-floor="1">1F</button>
+                <button class="floor-btn" data-floor="2">2F</button>
+                <button class="floor-btn" data-floor="3">3F</button>
+            </div>
+
+            <!-- 颜色图例 -->
+            <div class="legend">
+                <div class="legend-item"><span class="legend-dot free"></span> 空闲</div>
+                <div class="legend-item"><span class="legend-dot used"></span> 使用中</div>
+                <div class="legend-item"><span class="legend-dot away"></span> 暂离</div>
+                <div class="legend-item"><span class="legend-dot reserved"></span> 已预约</div>
+            </div>
+
+            <!-- 统计卡片 -->
+            <div class="stats-grid">
+                <div class="stat-card free"><div class="stat-number" id="freeCount">0</div><div class="stat-label">空闲</div></div>
+                <div class="stat-card used"><div class="stat-number" id="usedCount">0</div><div class="stat-label">使用中</div></div>
+                <div class="stat-card away"><div class="stat-number" id="awayCount">0</div><div class="stat-label">暂离</div></div>
+                <div class="stat-card maintenance"><div class="stat-number" id="maintenanceCount">0</div><div class="stat-label">维修</div></div>
+            </div>
+
+            <!-- 座位网格 -->
+            <div class="seat-grid" id="seatGrid"></div>
+        </div>
+
+        <!-- 右侧侧栏 -->
+        <div class="sidebar">
+            <div class="card">
+                <h3>📋 我的预约</h3>
+                <div id="myBookingsList">
+                    <p style="color:var(--text-secondary);">暂无预约记录</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 弹窗 -->
+    <div class="modal-overlay" id="bookingModal" style="display:none;">
+        <div class="modal-card">
+            <h3 id="modalTitle">📌 座位操作</h3>
+            <p>座位号：<strong id="modalSeatCode">A-01</strong></p>
+            <p>当前状态：<span id="modalStatus">空闲</span></p>
+            <div id="bookingSection" style="margin:16px 0;">
+                <label>选择时段：</label>
+                <select id="timeSlot" class="form-control">
+                    <option value="08:00-12:00">上午 08:00-12:00</option>
+                    <option value="12:00-14:00">中午 12:00-14:00</option>
+                    <option value="14:00-18:00">下午 14:00-18:00</option>
+                    <option value="18:00-22:00">晚上 18:00-22:00</option>
+                </select>
+            </div>
+            <div class="modal-actions" style="display:flex;gap:10px;margin-top:20px;">
+                <button class="btn btn-primary" id="btnPrimary" onclick="handlePrimaryAction()">确认预约</button>
+                <button class="btn btn-warning" id="btnSecondary" onclick="handleSecondaryAction()" style="display:none;">暂离</button>
+                <button class="btn btn-success" id="btnTertiary" onclick="handleTertiaryAction()" style="display:none;">上课保留</button>
+                <button class="btn btn-outline" onclick="closeModal()">取消</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/dashboard.js"></script>
+</body>
+</html>

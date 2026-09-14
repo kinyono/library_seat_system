@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>图书馆座位管理系统 - 登录</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/login.css">
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-card">
+            <h1>📚 图书馆座位管理系统</h1>
+            <p class="subtitle">高校智慧图书馆 · 座位预约平台</p>
+            <form id="loginForm">
+               document.getElementById('loginForm').addEventListener('submit', function (e) {
+  e.preventDefault();
+  const studentId = document.getElementById('studentId').value.trim();
+  const password = document.getElementById('password').value.trim();
+  if (!studentId || !password) {
+    alert('请填写学号和密码');
+    return;
+  }
+
+  let users = [];
+  try { users = JSON.parse(localStorage.getItem('lib_users')) || []; } catch (_) { users = []; }
+  let user = users.find(u => u.studentId === studentId);
+  if (!user) {
+    user = { id: Date.now(), name: '用户' + studentId.slice(-4), studentId, credit: 100, banned: false };
+    users.push(user);
+    localStorage.setItem('lib_users', JSON.stringify(users));
+  }
+  if (user.banned) {
+    alert('该账号已被封禁，请联系管理员');
+    return;
+  }
+
+  localStorage.setItem('currentUser', JSON.stringify(user));
+  window.location.href = 'pages/dashboard.html';
+});
+
+                <div class="form-group">
+                    <label for="password">密码</label>
+                    <input type="password" id="password" class="form-control" placeholder="请输入密码" required>
+                </div>
+                <button type="submit" class="btn-login">登 录</button>
+                document.getElementById('loginForm').addEventListener('submit', function (e) {
+  e.preventDefault();
+  const studentId = document.getElementById('studentId').value.trim();
+  const password = document.getElementById('password').value.trim();
+  if (!studentId || !password) {
+    alert('请填写学号和密码');
+    return;
+  }
+
+  let users = [];
+  try { users = JSON.parse(localStorage.getItem('lib_users')) || []; } catch (_) { users = []; }
+  let user = users.find(u => u.studentId === studentId);
+  if (!user) {
+    user = { id: Date.now(), name: '用户' + studentId.slice(-4), studentId, credit: 100, banned: false };
+    users.push(user);
+    localStorage.setItem('lib_users', JSON.stringify(users));
+  }
+  if (user.banned) {
+    alert('该账号已被封禁，请联系管理员');
+    return;
+  }
+
+  localStorage.setItem('currentUser', JSON.stringify(user));
+  window.location.href = 'pages/dashboard.html';
+});
+
+                
+            </form>
+            <div class="footer-info">
+                <p>首次使用请联系图书馆管理员激活账号</p>
+                <p>© 2026 图书馆座位管理系统 v1.0</p>
+            </div>
+        </div>
+    </div>
+    <script src="js/app.js"></script>
+</body>
+</html>

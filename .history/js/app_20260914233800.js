@@ -10,7 +10,7 @@ document.getElementById('loginForm').addEventListener('submit', function (e) {
     return;
   }
 
-  // 管理员登录（硬编码演示）
+  // ----- 管理员登录（硬编码演示）-----
   if (role === 'admin') {
     if (account === 'admin' && password === 'admin123') {
       const adminUser = {
@@ -22,14 +22,14 @@ document.getElementById('loginForm').addEventListener('submit', function (e) {
         role: 'admin'
       };
       localStorage.setItem('currentUser', JSON.stringify(adminUser));
-      window.location.href = 'admin.html';
+      window.location.href = 'admin.html'; // 直接进后台
     } else {
       alert('管理员账号或密码错误');
     }
     return;
   }
 
-  // 学生登录
+  // ----- 学生登录（原有逻辑）-----
   let users = [];
   try { users = JSON.parse(localStorage.getItem('lib_users')) || []; } catch (_) { users = []; }
   let user = users.find(u => u.studentId === account);

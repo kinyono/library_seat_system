@@ -1,0 +1,26 @@
+.admin-container {
+  max-width: 1300px; margin: 0 auto; padding: 32px 24px;
+}
+.admin-header {
+  display: flex; align-items: center; justify-content: space-between; margin-bottom: 32px;
+}
+.admin-header h1 { font-size: 28px; color: var(--primary); }
+.admin-header .back-link { color: var(--primary); text-decoration: none; font-weight: 600; }
+
+/* 规则表单网格 */
+.rules-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+}
+.rule-card {
+  background: var(--bg-white); border-radius: var(--radius-sm);
+  padding: 20px; box-shadow: var(--shadow-sm);
+}
+.rule-card h4 { margin-bottom: 12px; color: var(--primary); }
+.rule-card .form-group { margin-bottom: 12px; }
+.rule-card .form-group label { font-size: 14px; }
+.rule-card .form-control { font-size: 14px; padding: 8px 12px; }
+
+/* 后台表格内操作按钮 */
+.action-btns { display: flex; gap: 6px; flex-wrap: wrap; }
+.action-btns .btn { padding: 6px 14px; font-size: 13px; }

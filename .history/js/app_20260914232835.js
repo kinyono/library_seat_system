@@ -1,0 +1,25 @@
+document.getElementById('loginForm').addEventListener('submit', function (e) {
+  e.preventDefault();
+  const studentId = document.getElementById('studentId').value.trim();
+  const password = document.getElementById('password').value.trim();
+  if (!studentId || !password) {
+    alert('请填写学号和密码');
+    return;
+  }
+
+  let users = [];
+  try { users = JSON.parse(localStorage.getItem('lib_users')) || []; } catch (_) { users = []; }
+  let user = users.find(u => u.studentId === studentId);
+  if (!user) {
+    user = { id: Date.now(), name: '用户' + studentId.slice(-4), studentId, credit: 100, banned: false };
+    users.push(user);
+    localStorage.setItem('lib_users', JSON.stringify(users));
+  }
+  if (user.banned) {
+    alert('该账号已被封禁，请联系管理员');
+    return;
+  }
+
+  localStorage.setItem('currentUser', JSON.stringify(user));
+  window.location.href = 'pages/dashboard.html';
+});

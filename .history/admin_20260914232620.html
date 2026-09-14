@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>管理后台 - 图书馆座位系统</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+    <div class="admin-container">
+        <div class="admin-header">
+            <h1>⚙️ 管理后台</h1>
+            <a href="index.html" class="back-link">← 返回首页</a>
+        </div>
+
+        <!-- 选项卡 -->
+        <div class="tabs" id="tabBar">
+            <button class="tab-btn active" data-tab="seats">座位管理</button>
+            <button class="tab-btn" data-tab="users">用户管理</button>
+            <button class="tab-btn" data-tab="bookings">预约记录</button>
+            <button class="tab-btn" data-tab="rules">规则配置</button>
+        </div>
+
+        <!-- 座位管理 -->
+        <div class="tab-content active" id="tab-seats">
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>编号</th><th>楼层</th><th>区域</th><th>电源</th><th>状态</th><th>启用</th><th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="seatsTableBody"></tbody>
+                </table>
+            </div>
+            <button class="btn btn-primary" onclick="showAddSeatForm()" style="margin-top:16px;">+ 新增座位</button>
+        </div>
+
+        <!-- 用户管理 -->
+        <div class="tab-content" id="tab-users">
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr><th>姓名</th><th>学号</th><th>信用分</th><th>状态</th><th>操作</th></tr>
+                    </thead>
+                    <tbody id="usersTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 预约记录 -->
+        <div class="tab-content" id="tab-bookings">
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr><th>用户</th><th>座位</th><th>日期</th><th>时段</th><th>状态</th><th>操作</th></tr>
+                    </thead>
+                    <tbody id="bookingsTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 规则配置 -->
+        <div class="tab-content" id="tab-rules">
+            <div class="rules-grid">
+                <div class="rule-card">
+                    <h4>⏱ 预约时长</h4>
+                    <div class="form-group"><label>最长预约（分钟）</label><input type="number" id="ruleMaxMinutes" class="form-control" value="240"></div>
+                </div>
+                <div class="rule-card">
+                    <h4>✅ 签到宽限</h4>
+                    <div class="form-group"><label>宽限时间（分钟）</label><input type="number" id="ruleGraceMinutes" class="form-control" value="15"></div>
+                </div>
+                <div class="rule-card">
+                    <h4>🚶 暂离规则</h4>
+                    <div class="form-group"><label>保留时长（分钟）</label><input type="number" id="ruleAwayMinutes" class="form-control" value="45"></div>
+                    <div class="form-group"><label>每日次数</label><input type="number" id="ruleAwayTimes" class="form-control" value="3"></div>
+                    <div class="form-group"><label>超时扣分</label><input type="number" id="ruleAwayPenalty" class="form-control" value="10"></div>
+                </div>
+                <div class="rule-card">
+                    <h4>📚 上课保留</h4>
+                    <div class="form-group"><label>保留时长（分钟）</label><input type="number" id="ruleClassMinutes" class="form-control" value="120"></div>
+                    <div class="form-group"><label>每日次数</label><input type="number" id="ruleClassTimes" class="form-control" value="1"></div>
+                    <div class="form-group"><label>超时扣分</label><input type="number" id="ruleClassPenalty" class="form-control" value="20"></div>
+                    <div class="form-group"><label>最低信用分</label><input type="number" id="ruleClassMinCredit" class="form-control" value="80"></div>
+                </div>
+            </div>
+            <button class="btn btn-primary" onclick="saveRules()" style="margin-top:20px;">保存规则</button>
+        </div>
+    </div>
+
+    <script src="js/admin.js"></script>
+</body>
+</html>

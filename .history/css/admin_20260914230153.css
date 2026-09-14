@@ -1,0 +1,13 @@
+.tabs { display: flex; gap: 8px; margin: 15px 0; }
+.tab-btn { padding: 8px 18px; border: 1px solid #ddd; background: white; border-radius: 6px; cursor: pointer; }
+.tab-btn.active { background: #667eea; color: white; border-color: #667eea; }
+.toolbar { margin-bottom: 12px; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; }
+th, td { border: 1px solid #e0e0e0; padding: 8px 12px; text-align: left; }
+th { background: #f8f9fa; }
+tr:hover { background: #f5f5f5; }
+button { padding: 4px 10px; margin: 2px; cursor: pointer; border-radius: 4px; border: 1px solid #ccc; background: white; }
+.status-badge { padding: 2px 8px; border-radius: 4px; color: white; font-size: 12px; }
+.status-badge.free { background: #28a745; }
+.status-badge.used { background: #007bff; }
+.status-badge.away { background: #fd7e14; }

@@ -13,31 +13,15 @@
             <h1>📚 图书馆座位管理系统</h1>
             <p class="subtitle">高校智慧图书馆 · 座位预约平台</p>
             <form id="loginForm">
-                <!-- 角色选择 -->
                 <div class="form-group">
-                    <label>登录身份</label>
-                    <div class="role-switch">
-                        <label class="role-option">
-                            <input type="radio" name="role" value="student" checked>
-                            <span>🎓 学生</span>
-                        </label>
-                        <label class="role-option">
-                            <input type="radio" name="role" value="admin">
-                            <span>🛡️ 管理员</span>
-                        </label>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label for="studentId">账号</label>
-                    <input type="text" id="studentId" class="form-control" placeholder="学生填学号 / 管理员填 admin" required>
+                    <label for="studentId">学号</label>
+                    <input type="text" id="studentId" class="form-control" placeholder="请输入学号" required>
                 </div>
                 <div class="form-group">
                     <label for="password">密码</label>
                     <input type="password" id="password" class="form-control" placeholder="请输入密码" required>
                 </div>
                 <button type="submit" class="btn-login">登 录</button>
-                <p class="login-tip">管理员演示账号：<b>admin</b> / <b>admin123</b></p>
             </form>
             <div class="footer-info">
                 <p>首次使用请联系图书馆管理员激活账号</p>
