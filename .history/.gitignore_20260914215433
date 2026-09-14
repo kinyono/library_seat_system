@@ -1,0 +1,3 @@
+.WhistleAppData/
+node_modules/
+.env
