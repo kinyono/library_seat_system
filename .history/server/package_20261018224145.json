@@ -1,0 +1,11 @@
+{
+  "name": "library_seat_system_server",
+  "version": "1.0.0",
+  "description": "Library seat management system backend",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "init-db": "node scripts/init-db.js"
+  },
+  "dependencies": {}
+}

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>图书馆座位管理系统 · 登录</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/login.css">
+</head>
+<body>
+    <div class="login-bg">
+        <div class="bg-shape shape-1"></div>
+        <div class="bg-shape shape-2"></div>
+        <div class="bg-shape shape-3"></div>
+    </div>
+
+    <main class="login-container">
+        <section class="login-card">
+            <div class="login-brand">
+                <div class="brand-logo">📚</div>
+                <h1>图书馆座位管理系统</h1>
+                <p class="brand-sub">高校智慧图书馆 · 座位预约平台</p>
+            </div>
+
+            <form id="loginForm" novalidate>
+                <!-- 角色选择 -->
+                <div class="role-switch" role="radiogroup" aria-label="登录身份">
+                    <label class="role-option active">
+                        <input type="radio" name="role" value="student" checked>
+                        <span class="role-icon">🎓</span>
+                        <span class="role-text">学生</span>
+                    </label>
+                    <label class="role-option">
+                        <input type="radio" name="role" value="admin">
+                        <span class="role-icon">🛡️</span>
+                        <span class="role-text">管理员</span>
+                    </label>
+                </div>
+
+                <div class="form-group">
+                    <label for="studentId">账号</label>
+                    <div class="input-wrap">
+                        <span class="input-icon">👤</span>
+                        <input type="text" id="studentId" class="form-control" placeholder="请输入学号 / admin" required autocomplete="username">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">密码</label>
+                    <div class="input-wrap">
+                        <span class="input-icon">🔒</span>
+                        <input type="password" id="password" class="form-control" placeholder="请输入密码" required autocomplete="current-password">
+                    </div>
+                </div>
+
+                <div id="loginError" class="login-error" hidden></div>
+
+                <button type="submit" class="btn btn-primary btn-block btn-login">
+                    <span class="btn-text">登 录</span>
+                    <span class="btn-spinner" hidden>⏳</span>
+                </button>
+
+                <div class="demo-tip">
+                    <span>演示账号：</span>
+                    <code>admin</code> / <code>admin123</code>
+                    <button type="button" id="fillDemo" class="demo-fill">一键填入</button>
+                </div>
+            </form>
+
+            <footer class="login-footer">
+                <p>首次使用请联系图书馆管理员激活账号</p>
+                <p class="copyright">© 2026 图书馆座位管理系统 v2.0</p>
+            </footer>
+        </section>
+    </main>
+
+    <script src="js/api.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>

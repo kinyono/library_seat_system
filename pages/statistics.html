@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>数据统计 - 图书馆座位系统</title>
+    <link rel="stylesheet" href="../css/statistics.css">
+    <!-- 引入 Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="stat-container">
+        <!-- 顶部导航栏 -->
+        <header class="stat-header">
+            <div class="header-left">
+                <h1>📊 数据统计</h1>
+                <nav class="period-nav">
+                    <button class="period-btn" data-period="week">本周</button>
+                    <button class="period-btn" data-period="month">本月</button>
+                    <button class="period-btn active" data-period="all">全部</button>
+                </nav>
+            </div>
+            <div class="header-right">
+                <a href="../pages/dashboard.html" class="btn-back">← 返回主页</a>
+                <button class="btn-logout" onclick="logout()">退出</button>
+            </div>
+        </header>
+
+        <!-- 概览数据卡片 -->
+        <div class="overview-grid">
+            <div class="stat-card">
+                <div class="stat-title">累计学习时长（小时）</div>
+                <div class="stat-value" id="totalDuration">0.0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-title">累计预约次数</div>
+                <div class="stat-value" id="totalBookings">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-title">平均单次时长（分钟）</div>
+                <div class="stat-value" id="avgDuration">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-title">累计扣分</div>
+                <div class="stat-value text-danger" id="totalPenalty">0</div>
+            </div>
+        </div>
+
+        <!-- 图表区域 -->
+        <div class="charts-grid">
+            <div class="chart-card span-2">
+                <div class="chart-header">
+                    <h3>学习时长趋势</h3>
+                </div>
+                <div class="chart-wrap">
+                    <canvas id="trendChart"></canvas>
+                    <div class="empty-state" id="trendEmpty">暂无学习时长数据</div>
+                </div>
+            </div>
+            <div class="chart-card">
+                <h3>座位实时余量</h3>
+                <div class="chart-wrap">
+                    <canvas id="seatAvailabilityChart"></canvas>
+                    <div class="empty-state" id="seatEmpty">暂无座位数据</div>
+                </div>
+            </div>
+            <div class="chart-card">
+                <h3>区域偏好</h3>
+                <div class="chart-wrap">
+                    <canvas id="areaChart"></canvas>
+                    <div class="empty-state" id="areaEmpty">暂无区域数据</div>
+                </div>
+            </div>
+            <div class="chart-card">
+                <h3>楼层偏好</h3>
+                <div class="chart-wrap">
+                    <canvas id="floorChart"></canvas>
+                    <div class="empty-state" id="floorEmpty">暂无楼层数据</div>
+                </div>
+            </div>
+            <div class="chart-card">
+                <h3>电源需求</h3>
+                <div class="chart-wrap">
+                    <canvas id="powerChart"></canvas>
+                    <div class="empty-state" id="powerEmpty">暂无电源数据</div>
+                </div>
+            </div>
+            <div class="chart-card">
+                <h3>每日学习峰值</h3>
+                <div class="chart-wrap">
+                    <canvas id="peakChart"></canvas>
+                    <div class="empty-state" id="peakEmpty">暂无峰值数据</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /* ============================================================
+           statistics.js - 图书馆座位管理系统数据统计页
+           依赖：Chart.js (CDN)
+           数据源：localStorage (lib_seats, lib_bookings, currentUser)
+           核心逻辑：基于预约记录实时同步座位状态，图表反映实际操作
+           ============================================================ */
+
+        /* ---------- 数据读写 ---------- */
+        function getSeats()    { return JSON.parse(localStorage.getItem('lib_seats')    || '[]'); }
+        function getBookings() { return JSON.parse(localStorage.getItem('lib_bookings') || '[]'); }
+        function getUser()     { return JSON.parse(localStorage.getItem('currentUser')); }
+
+        /* ---------- 初始化座位（仅首次创建，全部空闲） ---------- */
+        function initData() {
+            if (localStorage.getItem('lib_seats')) return;
+
+            const seats = [];
+            const areas = ['quiet', 'discuss', 'window'];
+            for (let f = 1; f <= 3; f++) {
+                for (let i = 1; i <= 6; i++) {
+                    seats.push({
+                        id: (f - 1) * 6 + i,
+                        code: String.fromCharCode(64 + f) + '-' + String(i).padStart(2, '0'),
+                        floor: f,
+                        area: areas[Math.floor(Math.random() * 3)],
+                        hasPower: Math.random() > 0.5,
+                        status: 'free',
+                        enabled: true
+                    });
+                }
+            }
+            localStorage.setItem('lib_seats', JSON.stringify(seats));
+            if (!localStorage.getItem('lib_bookings')) localStorage.setItem('lib_bookings', JSON.stringify([]));
+        }
+
+        /* ---------- 根据有效预约同步座位状态 ---------- */
+        function syncSeatStatusWithBookings() {
+            const seats = getSeats();
+            const bookings = getBookings();
+            const now = new Date();
+
+            seats.forEach(seat => {
+                if (seat.enabled !== false) seat.status = 'free';
+            });
+
+            bookings.forEach(booking => {
+                const seat = seats.find(s => s.id === booking.seatId);
+                if (!seat || seat.enabled === false) return;
+                const start = new Date(booking.date + 'T' + booking.startTime);
+                const end   = new Date(booking.date + 'T' + booking.endTime);
+                if (now < start) {
+                    seat.status = 'reserved';
+                } else if (now >= start && now < end) {
+                    seat.status = 'used';
+                } else {
+                    seat.status = 'free';
+                }
+            });
+
+            localStorage.setItem('lib_seats', JSON.stringify(seats));
+        }
+
+        /* ---------- 工具函数 ---------- */
+        function getWeekRange(date = new Date()) {
+            const day = date.getDay() || 7;
+            const diff = day - 1;
+            const monday = new Date(date);
+            monday.setDate(monday.getDate() - diff);
+            monday.setHours(0,0,0,0);
+            const sunday = new Date(monday);
+            sunday.setDate(sunday.getDate() + 6);
+            sunday.setHours(23,59,59,999);
+            return { start: monday, end: sunday };
+        }
+
+        function getMonthRange(date = new Date()) {
+            const year = date.getFullYear();
+            const month = date.getMonth();
+            const first = new Date(year, month, 1);
+            const last = new Date(year, month + 1, 0, 23, 59, 59, 999);
+            return { start: first, end: last };
+        }
+
+        function filterBookingsByRange(rangeType) {
+            const all = getBookings();
+            const now = new Date();
+            let range;
+            if (rangeType === 'week') range = getWeekRange(now);
+            else if (rangeType === 'month') range = getMonthRange(now);
+            else return all;
+            return all.filter(b => {
+                const d = new Date(b.date + 'T' + b.startTime);
+                return d >= range.start && d <= range.end;
+            });
+        }
+
+        /* ---------- 渲染图表 ---------- */
+        let chartInstances = {};
+
+        function destroyCharts() {
+            Object.values(chartInstances).forEach(c => c?.destroy());
+            chartInstances = {};
+        }
+
+        function showEmpty(id, show) {
+            const el = document.getElementById(id);
+            if (el) el.style.display = show ? 'block' : 'none';
+        }
+
+        function renderCharts(rangeType = 'all') {
+            destroyCharts();
+            const seats = getSeats();
+            const filteredBookings = filterBookingsByRange(rangeType);
+            const now = new Date();
+
+            // ---- 1. 座位实时余量（seatAvailabilityChart） ----
+            const statusCount = { free: 0, used: 0, reserved: 0, away: 0, disabled: 0 };
+            seats.forEach(s => {
+                const st = s.enabled === false ? 'disabled' : (s.status || 'free');
+                statusCount[st] = (statusCount[st] || 0) + 1;
+            });
+            const ctxSeat = document.getElementById('seatAvailabilityChart')?.getContext('2d');
+            if (ctxSeat) {
+                const hasData = statusCount.free + statusCount.used + statusCount.reserved + statusCount.away + statusCount.disabled > 0;
+                showEmpty('seatEmpty', !hasData);
+                if (hasData) {
+                    chartInstances.seat = new Chart(ctxSeat, {
+                        type: 'doughnut',
+                        data: {
+                            labels: ['空闲', '使用中', '已预约', '暂离', '不可用'],
+                            datasets: [{
+                                data: [statusCount.free, statusCount.used, statusCount.reserved, statusCount.away, statusCount.disabled],
+                                backgroundColor: ['#22c55e', '#6366f1', '#f59e0b', '#ec4899', '#94a3b8'],
+                                borderWidth: 0
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: { legend: { position: 'bottom' } }
+                        }
+                    });
+                }
+            }
+
+            // ---- 2. 区域偏好（areaChart） ----
+            const areaCount = { quiet: 0, discuss: 0, window: 0 };
+            filteredBookings.forEach(b => {
+                const seat = seats.find(s => s.id === b.seatId);
+                if (seat && areaCount[seat.area] !== undefined) areaCount[seat.area]++;
+            });
+            const totalArea = Object.values(areaCount).reduce((a,b)=>a+b,0);
+            if (totalArea === 0) {
+                seats.forEach(s => { if (areaCount[s.area] !== undefined) areaCount[s.area]++; });
+            }
+            const ctxArea = document.getElementById('areaChart')?.getContext('2d');
+            if (ctxArea) {
+                const hasData = areaCount.quiet + areaCount.discuss + areaCount.window > 0;
+                showEmpty('areaEmpty', !hasData);
+                if (hasData) {
+                    chartInstances.area = new Chart(ctxArea, {
+                        type: 'polarArea',
+                        data: {
+                            labels: ['静音区', '讨论区', '靠窗区'],
+                            datasets: [{
+                                data: [areaCount.quiet, areaCount.discuss, areaCount.window],
+                                backgroundColor: ['#6366f1', '#22c55e', '#f59e0b']
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: { legend: { position: 'bottom' } }
+                        }
+                    });
+                }
+            }
+
+            // ---- 3. 楼层偏好（floorChart） ----
+            const floorCount = { 1: 0, 2: 0, 3: 0 };
+            filteredBookings.forEach(b => {
+                const seat = seats.find(s => s.id === b.seatId);
+                if (seat && floorCount[seat.floor] !== undefined) floorCount[seat.floor]++;
+            });
+            const totalFloor = Object.values(floorCount).reduce((a,b)=>a+b,0);
+            if (totalFloor === 0) {
+                seats.forEach(s => { if (floorCount[s.floor] !== undefined) floorCount[s.floor]++; });
+            }
+            const ctxFloor = document.getElementById('floorChart')?.getContext('2d');
+            if (ctxFloor) {
+                const hasData = floorCount[1] + floorCount[2] + floorCount[3] > 0;
+                showEmpty('floorEmpty', !hasData);
+                if (hasData) {
+                    chartInstances.floor = new Chart(ctxFloor, {
+                        type: 'bar',
+                        data: {
+                            labels: ['1楼', '2楼', '3楼'],
+                            datasets: [{
+                                label: '预约次数',
+                                data: [floorCount[1], floorCount[2], floorCount[3]],
+                                backgroundColor: ['#6366f1', '#22c55e', '#f59e0b'],
+                                borderRadius: 4
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } },
+                            plugins: { legend: { display: false } }
+                        }
+                    });
+                }
+            }
+
+            // ---- 4. 电源需求（powerChart） ----
+            const powerCount = { withPower: 0, withoutPower: 0 };
+            filteredBookings.forEach(b => {
+                const seat = seats.find(s => s.id === b.seatId);
+                if (seat) {
+                    if (seat.hasPower) powerCount.withPower++;
+                    else powerCount.withoutPower++;
+                }
+            });
+            const totalPower = powerCount.withPower + powerCount.withoutPower;
+            if (totalPower === 0) {
+                seats.forEach(s => {
+                    if (s.hasPower) powerCount.withPower++;
+                    else powerCount.withoutPower++;
+                });
+            }
+            const ctxPower = document.getElementById('powerChart')?.getContext('2d');
+            if (ctxPower) {
+                const hasData = powerCount.withPower + powerCount.withoutPower > 0;
+                showEmpty('powerEmpty', !hasData);
+                if (hasData) {
+                    chartInstances.power = new Chart(ctxPower, {
+                        type: 'pie',
+                        data: {
+                            labels: ['有电源', '无电源'],
+                            datasets: [{
+                                data: [powerCount.withPower, powerCount.withoutPower],
+                                backgroundColor: ['#22c55e', '#f59e0b'],
+                                borderWidth: 0
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: { legend: { position: 'bottom' } }
+                        }
+                    });
+                }
+            }
+
+            // ---- 5. 学习时长趋势（trendChart） ----
+            const durationMap = {};
+            filteredBookings.forEach(b => {
+                if (!b.actualStart || !b.actualEnd) return;
+                const day = b.date;
+                const start = new Date(b.date + 'T' + b.actualStart);
+                const end   = new Date(b.date + 'T' + b.actualEnd);
+                const minutes = (end - start) / 60000;
+                if (minutes > 0) {
+                    durationMap[day] = (durationMap[day] || 0) + minutes;
+                }
+            });
+            const sortedDays = Object.keys(durationMap).sort();
+            const durations = sortedDays.map(d => +(durationMap[d] / 60).toFixed(1));
+            const ctxTrend = document.getElementById('trendChart')?.getContext('2d');
+            if (ctxTrend) {
+                const hasData = sortedDays.length > 0;
+                showEmpty('trendEmpty', !hasData);
+                if (hasData) {
+                    chartInstances.trend = new Chart(ctxTrend, {
+                        type: 'line',
+                        data: {
+                            labels: sortedDays,
+                            datasets: [{
+                                label: '学习时长 (小时)',
+                                data: durations,
+                                borderColor: '#6366f1',
+                                backgroundColor: 'rgba(99,102,241,0.1)',
+                                fill: true,
+                                tension: 0.3,
+                                pointRadius: 4
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            scales: {
+                                x: { ticks: { maxRotation: 45 } },
+                                y: { beginAtZero: true, title: { display: true, text: '小时' } }
+                            },
+                            plugins: { legend: { display: false } }
+                        }
+                    });
+                }
+            }
+
+            // ---- 6. 每日学习峰值（peakChart） ----
+            const hourCount = {};
+            for (let h = 8; h <= 22; h++) hourCount[h] = 0;
+            filteredBookings.forEach(b => {
+                const startHour = parseInt(b.startTime.split(':')[0]);
+                if (hourCount[startHour] !== undefined) hourCount[startHour]++;
+            });
+            const hours = Object.keys(hourCount).map(h => `${h}:00`);
+            const counts = Object.values(hourCount);
+            const ctxPeak = document.getElementById('peakChart')?.getContext('2d');
+            if (ctxPeak) {
+                const hasData = counts.some(v => v > 0);
+                showEmpty('peakEmpty', !hasData);
+                if (hasData) {
+                    chartInstances.peak = new Chart(ctxPeak, {
+                        type: 'bar',
+                        data: {
+                            labels: hours,
+                            datasets: [{
+                                label: '预约次数',
+                                data: counts,
+                                backgroundColor: '#f59e0b',
+                                borderRadius: 4
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            scales: {
+                                y: { beginAtZero: true, ticks: { stepSize: 1 } }
+                            },
+                            plugins: { legend: { display: false } }
+                        }
+                    });
+                }
+            }
+
+            // ---- 更新概览卡片 ----
+            updateOverviewCards(filteredBookings);
+        }
+
+        /* ---------- 更新概览卡片 ---------- */
+        function updateOverviewCards(bookings) {
+            let totalMinutes = 0;
+            let countWithDuration = 0;
+            bookings.forEach(b => {
+                if (b.actualStart && b.actualEnd) {
+                    const start = new Date(b.date + 'T' + b.actualStart);
+                    const end   = new Date(b.date + 'T' + b.actualEnd);
+                    const mins = (end - start) / 60000;
+                    if (mins > 0) {
+                        totalMinutes += mins;
+                        countWithDuration++;
+                    }
+                }
+            });
+            document.getElementById('totalDuration').textContent = (totalMinutes / 60).toFixed(1);
+            document.getElementById('totalBookings').textContent = bookings.length;
+            document.getElementById('avgDuration').textContent = countWithDuration > 0 ? Math.round(totalMinutes / countWithDuration) : 0;
+            const totalPenalty = bookings.reduce((sum, b) => sum + (b.penalty || 0), 0);
+            document.getElementById('totalPenalty').textContent = totalPenalty;
+        }
+
+        /* ---------- 时间范围切换 ---------- */
+        function switchPeriod(period) {
+            document.querySelectorAll('.period-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.period === period);
+            });
+            renderCharts(period);
+        }
+
+        /* ---------- 页面初始化 ---------- */
+        function init() {
+            if (!localStorage.getItem('lib_seats')) initData();
+            if (!localStorage.getItem('lib_bookings')) localStorage.setItem('lib_bookings', JSON.stringify([]));
+            syncSeatStatusWithBookings();
+
+            document.querySelectorAll('.period-btn').forEach(btn => {
+                btn.addEventListener('click', () => switchPeriod(btn.dataset.period));
+            });
+
+            renderCharts('all');
+        }
+
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>图书馆座位预约系统</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="login-wrapper">
+        <div class="login-card">
+            <div class="login-header">
+                <h1>📚 图书馆座位预约系统</h1>
+                <p class="subtitle">智能管理 · 高效学习</p>
+            </div>
+
+            <!-- 角色切换 -->
+            <div class="role-switch">
+                <button class="role-btn active" data-role="student" onclick="switchRole('student')">🎓 学生</button>
+                <button class="role-btn" data-role="admin" onclick="switchRole('admin')">🔧 管理员</button>
+            </div>
+
+            <!-- 登录表单 -->
+            <form id="loginForm" onsubmit="handleLogin(event)">
+                <div class="input-group">
+                    <label for="username">学号 / 工号</label>
+                    <input type="text" id="username" placeholder="请输入学号" required autocomplete="off">
+                </div>
+                <div class="input-group">
+                    <label for="password">密码</label>
+                    <input type="password" id="password" placeholder="请输入密码" required autocomplete="off">
+                </div>
+
+                <!-- 演示账号快速填入 -->
+                <div class="demo-accounts">
+                    <span class="demo-label">快速体验：</span>
+                    <button type="button" class="demo-btn" onclick="fillDemo('student')">学生演示</button>
+                    <button type="button" class="demo-btn" onclick="fillDemo('admin')">管理员演示</button>
+                </div>
+
+                <button type="submit" class="login-btn">登 录</button>
+            </form>
+
+            <div class="login-footer">
+                <span>首次使用自动注册</span>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/login.js"></script>
+</body>
+</html>

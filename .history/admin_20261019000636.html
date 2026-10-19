@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>管理员后台 - 图书馆座位系统</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/admin.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+    <div class="admin-container">
+        <!-- 顶部导航 -->
+        <header class="admin-header">
+            <div class="header-left">
+                <h1><i class="fas fa-cog"></i> 管理员后台</h1>
+                <span class="role-badge">管理员</span>
+            </div>
+            <div class="header-right">
+                <a href="pages/profile.html" class="profile-link"><i class="fas fa-user"></i> 个人中心</a>
+                <!-- ====== 新增：添加管理员按钮 ====== -->
+                <button class="profile-link" onclick="openCreateAdminModal()" style="background:none; border:none; cursor:pointer; color:#fff;">
+                    <i class="fas fa-user-shield"></i> 添加管理员
+                </button>
+                <!-- ================================== -->
+                <div class="realtime-clock" id="realtimeClock">--:--:--</div>
+                <a href="javascript:void(0)" class="logout-link" onclick="logout()"><i class="fas fa-sign-out-alt"></i> 退出</a>
+            </div>
+        </header>
+
+        <!-- 统计卡片、Tab等内容保持不变，省略... -->
+
+        <!-- 添加座位弹窗（原有）... -->
+
+        <!-- ====== 新增：创建管理员弹窗 ====== -->
+        <div class="modal-overlay" id="createAdminModal" style="display:none;" onclick="if(event.target===this)closeCreateAdminModal()">
+            <div class="modal-card">
+                <h3><i class="fas fa-user-shield"></i> 创建管理员</h3>
+                <form id="createAdminForm">
+                    <div class="form-group">
+                        <label>管理员账号</label>
+                        <input type="text" id="adminUsername" class="form-control" placeholder="请输入管理员账号" required autocomplete="off">
+                    </div>
+                    <div class="form-group">
+                        <label>密码（至少6位）</label>
+                        <input type="password" id="adminPassword" class="form-control" placeholder="请输入密码" required>
+                    </div>
+                    <div id="createAdminError" class="login-error" style="display:none;"></div>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-outline" onclick="closeCreateAdminModal()">取消</button>
+                        <button type="submit" class="btn btn-primary">确认创建</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <!-- ================================== -->
+
+    </div>
+
+    <script src="js/admin.js"></script>
+    <!-- 退出登录函数 -->
+    <script>
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('currentUser');
+            window.location.href = 'index.html';
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>学生仪表盘 - 图书馆座位系统</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/dashboard.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- 顶部导航 -->
+        <header class="dashboard-header">
+            <div class="header-left">
+                <h1>📚 图书馆座位</h1>
+                <span class="role-badge">学生</span>
+            </div>
+            <div class="header-right">
+                <div class="user-info">
+                    <span id="userName">用户</span>
+                    <span>信用分：<strong id="userCredit">100</strong></span>
+                </div>
+                <a href="profile.html" class="profile-link">👤 个人中心</a>
+                <a href="statistics.html" class="profile-link">📊 数据统计</a>
+                <div class="realtime-clock" id="realtimeClock">--:--:--</div>
+                <!-- 修改退出链接：阻止默认跳转，调用 logout 函数 -->
+                <a href="javascript:void(0)" class="logout-link" onclick="logout()">退出</a>
+            </div>
+        </header>
+
+        <!-- 统计卡片 -->
+        <div class="stats-row">
+            <div class="stat-card">
+                <div class="stat-value" id="statTotal">0</div>
+                <div class="stat-label">总座位</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="statFree">0</div>
+                <div class="stat-label">空闲</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="statUsed">0</div>
+                <div class="stat-label">使用中</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="statMyBooking">0</div>
+                <div class="stat-label">我的预约</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="statOccupancy">0%</div>
+                <div class="stat-label">占用率</div>
+            </div>
+        </div>
+
+        <!-- 主内容区 -->
+        <div class="dashboard-main">
+            <!-- 左侧：推荐座位 -->
+            <section class="recommend-section">
+                <div class="section-header">
+                    <h2>⭐ 推荐座位</h2>
+                    <span class="refresh-hint" onclick="refreshRecommend()">🔄 刷新</span>
+                </div>
+                <div id="recommendList" class="recommend-list">
+                    <div class="loading">计算推荐中...</div>
+                </div>
+            </section>
+
+            <!-- 右侧：座位网格 -->
+            <section class="grid-section">
+                <div class="grid-toolbar">
+                    <div class="filter-group">
+                        <label>楼层</label>
+                        <select id="floorFilter">
+                            <option value="all">全部</option>
+                            <option value="1">1F</option>
+                            <option value="2">2F</option>
+                            <option value="3">3F</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>区域</label>
+                        <select id="areaFilter">
+                            <option value="all">全部</option>
+                            <option value="quiet">静音区</option>
+                            <option value="discuss">讨论区</option>
+                            <option value="window">靠窗区</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>电源</label>
+                        <select id="powerFilter">
+                            <option value="all">不限</option>
+                            <option value="yes">有电源</option>
+                            <option value="no">无电源</option>
+                        </select>
+                    </div>
+                    <!-- 视图切换 -->
+                    <div class="view-toggle">
+                        <button class="view-btn active" data-view="grid">📐 网格</button>
+                        <button class="view-btn" data-view="timeline">📅 时间轴</button>
+                    </div>
+                </div>
+
+                <!-- 图例 -->
+                <div class="legend">
+                    <div class="legend-item"><span class="legend-dot free"></span>空闲</div>
+                    <div class="legend-item"><span class="legend-dot reserved"></span>已预约</div>
+                    <div class="legend-item"><span class="legend-dot used"></span>使用中</div>
+                    <div class="legend-item"><span class="legend-dot away"></span>暂离</div>
+                    <div class="legend-item"><span class="legend-dot maintenance"></span>维修</div>
+                </div>
+
+                <!-- 座位网格 -->
+                <div id="seatGrid" class="seat-grid"></div>
+
+                <!-- 时间轴视图（默认隐藏） -->
+                <div id="timelineContainer" class="timeline-container" style="display:none;"></div>
+            </section>
+        </div>
+    </div>
+
+    <!-- 座位详情弹窗 -->
+    <div id="modalOverlay" class="modal-overlay" onclick="closeSeatModal()"></div>
+    <div id="seatModal" class="modal" style="display:none;">
+        <div class="modal-card">
+            <h3 id="detailCode">座位详情</h3>
+            <div class="detail-grid">
+                <div class="detail-row"><span class="dl">座位编号</span><span class="dd" id="detailCodeValue"></span></div>
+                <div class="detail-row"><span class="dl">楼层</span><span class="dd" id="detailFloor"></span></div>
+                <div class="detail-row"><span class="dl">区域</span><span class="dd" id="detailArea"></span></div>
+                <div class="detail-row"><span class="dl">电源</span><span class="dd" id="detailPower"></span></div>
+                <div class="detail-row"><span class="dl">状态</span><span class="dd" id="detailStatus"></span></div>
+            </div>
+            <div id="timeSlotSelector" style="display:none; margin-top:12px;">
+                <label style="font-size:13px; color:var(--text-secondary);">选择时段</label>
+                <div style="display:flex; gap:8px; margin-top:4px;">
+                    <select id="startHour" class="form-control" style="flex:1;"></select>
+                    <span style="align-self:center;">至</span>
+                    <select id="endHour" class="form-control" style="flex:1;"></select>
+                </div>
+            </div>
+            <div id="actionContainer" style="margin-top:16px;"></div>
+            <button class="btn btn-outline btn-block" style="margin-top:8px;" onclick="closeSeatModal()">关闭</button>
+        </div>
+    </div>
+
+    <!-- 倒计时面板 -->
+    <div id="timerPanel" class="timer-panel">
+        <div class="timer-label" id="timerLabel">暂离中</div>
+        <div class="timer-remaining" id="timerRemaining">45:00</div>
+        <div class="progress-bar"><div class="progress-bar-inner" id="timerProgress"></div></div>
+    </div>
+
+    <script src="../js/dashboard.js"></script>
+    <!-- 添加退出登录函数 -->
+    <script>
+        function logout() {
+            // 清除本地存储的登录凭证
+            localStorage.removeItem('token');
+            localStorage.removeItem('currentUser');
+            // 跳转到登录页
+            window.location.href = '../index.html';
+        }
+    </script>
+</body>
+</html>

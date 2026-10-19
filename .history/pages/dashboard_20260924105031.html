@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>学生仪表盘 - 图书馆座位系统</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/dashboard.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- 顶部导航 -->
+        <header class="dashboard-header">
+            <div class="header-left">
+                <h1>📚 图书馆座位</h1>
+                <span class="role-badge">学生</span>
+            </div>
+            <div class="header-right">
+                <div class="user-info">
+                    <span id="userName">用户</span>
+                    <span>信用分：<strong id="userCredit">100</strong></span>
+                </div>
+                <!-- 👇 新增个人中心入口 -->
+                <a href="profile.html" class="profile-link">👤 个人中心</a>
+                <div class="realtime-clock" id="realtimeClock">--:--:--</div>
+                <a href="../index.html" class="logout-link">退出</a>
+            </div>
+        </header>
+
+        <!-- 统计卡片 -->
+        <div class="stats-row">
+            <div class="stat-card">
+                <div class="stat-value" id="statTotal">0</div>
+                <div class="stat-label">总座位</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="statFree">0</div>
+                <div class="stat-label">空闲</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="statUsed">0</div>
+                <div class="stat-label">使用中</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="statMyBooking">0</div>
+                <div class="stat-label">我的预约</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="statOccupancy">0%</div>
+                <div class="stat-label">占用率</div>
+            </div>
+        </div>
+
+        <!-- 主内容区 -->
+        <div class="dashboard-main">
+            <!-- 左侧：推荐座位 -->
+            <section class="recommend-section">
+                <div class="section-header">
+                    <h2>⭐ 推荐座位</h2>
+                    <span class="refresh-hint" onclick="refreshRecommend()">🔄 刷新</span>
+                </div>
+                <div id="recommendList" class="recommend-list">
+                    <div class="loading">计算推荐中...</div>
+                </div>
+            </section>
+
+            <!-- 右侧：座位网格 -->
+            <section class="grid-section">
+                <div class="grid-toolbar">
+                    <div class="filter-group">
+                        <label>楼层</label>
+                        <select id="floorFilter" onchange="renderGrid()">
+                            <option value="all">全部</option>
+                            <option value="1">1F</option>
+                            <option value="2">2F</option>
+                            <option value="3">3F</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>区域</label>
+                        <select id="areaFilter" onchange="renderGrid()">
+                            <option value="all">全部</option>
+                            <option value="quiet">静音区</option>
+                            <option value="discuss">讨论区</option>
+                            <option value="window">靠窗区</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>电源</label>
+                        <select id="powerFilter" onchange="renderGrid()">
+                            <option value="all">不限</option>
+                            <option value="yes">有电源</option>
+                            <option value="no">无电源</option>
+                        </select>
+                    </div>
+                </div>
+                <div id="seatGrid" class="seat-grid"></div>
+            </section>
+        </div>
+    </div>
+
+    <script src="../js/dashboard.js"></script>
+</body>
+</html>

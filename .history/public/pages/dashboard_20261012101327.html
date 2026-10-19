@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>图书馆座位管理系统 - 大厅</title>
+    <link rel="stylesheet" href="../css/dashboard.css">
+    <!-- 建议同时引入 style.css，确保按钮、Toast 等基础样式生效 -->
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+<div class="dashboard-container">
+
+    <!-- 顶部导航 -->
+    <header class="dashboard-header">
+        <div class="header-left">
+            <h1>📚 座位预约</h1>
+            <span class="page-sub">Dashboard</span>
+        </div>
+        <div class="header-right">
+            <div class="user-info">
+                <span class="user-name" id="userName">--</span>
+                <span class="role-badge" id="userRole">学生</span>
+                <span class="credit-badge" id="userCredit">💎 100</span>
+            </div>
+            <button class="refresh-btn-top" onclick="location.reload()" title="刷新">🔄</button>
+            <a href="../index.html" class="logout-link">退出登录</a>
+        </div>
+    </header>
+
+    <!-- 主体布局 -->
+    <div class="main-layout">
+
+        <!-- 左侧主区域 -->
+        <div class="left-panel">
+            <!-- 筛选栏 -->
+            <div class="filter-bar">
+                <div class="filter-item">
+                    <label>楼层</label>
+                    <select id="floorFilter">
+                        <option value="all">全部楼层</option>
+                        <option value="1">1F</option>
+                        <option value="2">2F</option>
+                        <option value="3">3F</option>
+                    </select>
+                </div>
+                <div class="filter-item">
+                    <label>区域</label>
+                    <select id="areaFilter">
+                        <option value="all">全部区域</option>
+                        <option value="quiet">静音区</option>
+                        <option value="discuss">讨论区</option>
+                        <option value="window">窗边区</option>
+                    </select>
+                </div>
+                <div class="filter-item">
+                    <label>电源</label>
+                    <select id="powerFilter">
+                        <option value="all">不限</option>
+                        <option value="yes">有电源</option>
+                        <option value="no">无电源</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- 座位网格 -->
+            <div id="seatGrid" class="seat-grid"></div>
+
+            <!-- 图例 -->
+            <div class="legend">
+                <span class="legend-item"><span class="legend-dot free"></span>空闲</span>
+                <span class="legend-item"><span class="legend-dot reserved"></span>已预约</span>
+                <span class="legend-item"><span class="legend-dot used"></span>使用中</span>
+                <span class="legend-item"><span class="legend-dot away"></span>暂离</span>
+                <span class="legend-item"><span class="legend-dot maintenance"></span>维修</span>
+            </div>
+        </div>
+
+        <!-- 右侧面板 -->
+        <div class="right-panel">
+            <!-- 推荐座位 -->
+            <div>
+                <h3>⭐ 推荐座位</h3>
+                <div id="recommendList" class="recommend-list"></div>
+            </div>
+
+            <!-- 座位详情（仅展示信息） -->
+            <div>
+                <h3>📍 座位详情</h3>
+                <div id="seatDetail">
+                    <div class="detail-row"><span class="label">编号</span><span id="detailCode">--</span></div>
+                    <div class="detail-row"><span class="label">楼层</span><span id="detailFloor">--</span></div>
+                    <div class="detail-row"><span class="label">区域</span><span id="detailArea">--</span></div>
+                    <div class="detail-row"><span class="label">电源</span><span id="detailPower">--</span></div>
+                    <div class="detail-row"><span class="label">状态</span><span id="detailStatus">--</span></div>
+                </div>
+            </div>
+
+            <!-- 我的预约 -->
+            <div>
+                <h3>📋 我的预约</h3>
+                <ul id="myBookings" class="bookings-list">
+                    <li style="color:#999;font-size:13px;">暂无预约</li>
+                </ul>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- ========== 弹窗（模态框） ========== -->
+<div id="modalOverlay" class="modal-overlay"></div>
+<div id="seatModal" class="modal">
+    <button class="close-btn" id="closeModalBtn">&times;</button>
+    <!-- 关键修复：添加 id="seatModalTitle" -->
+    <div class="modal-title" id="seatModalTitle">座位详情</div>
+    <div class="detail-row"><span class="label">编号</span><span id="modalCode">--</span></div>
+    <div class="detail-row"><span class="label">楼层</span><span id="modalFloor">--</span></div>
+    <div class="detail-row"><span class="label">区域</span><span id="modalArea">--</span></div>
+    <div class="detail-row"><span class="label">电源</span><span id="modalPower">--</span></div>
+    <div class="detail-row"><span class="label">状态</span><span id="modalStatus">--</span></div>
+    <!-- 关键：id="actionContainer"，与 JS 匹配 -->
+    <div id="actionContainer" style="display:flex;flex-direction:column;gap:8px;margin-top:12px;"></div>
+</div>
+
+<!-- ========== 倒计时面板 ========== -->
+<div id="timerPanel" class="timer-panel">
+    <div class="timer-label" id="timerLabel">暂离中</div>
+    <div class="timer-remaining" id="timerRemaining">00:00</div>
+    <div class="progress-bar"><div class="progress-bar-inner" id="timerProgress" style="width:100%"></div></div>
+</div>
+
+<script src="../js/dashboard.js"></script>
+</body>
+</html>

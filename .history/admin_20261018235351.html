@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>管理员后台 - 图书馆座位系统</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/admin.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+    <div class="admin-container">
+        <!-- 顶部导航 -->
+        <header class="admin-header">
+            <div class="header-left">
+                <h1><i class="fas fa-cog"></i> 管理员后台</h1>
+                <span class="role-badge">管理员</span>
+            </div>
+            <div class="header-right">
+                <a href="pages/profile.html" class="profile-link"><i class="fas fa-user"></i> 个人中心</a>
+                <div class="realtime-clock" id="realtimeClock">--:--:--</div>
+                <!-- 修改退出链接 -->
+                <a href="javascript:void(0)" class="logout-link" onclick="logout()"><i class="fas fa-sign-out-alt"></i> 退出</a>
+            </div>
+        </header>
+
+        <!-- 其余内容保持不变，省略... -->
+        <!-- 请保留原有的所有 HTML 结构 -->
+
+    </div>
+
+    <script src="js/admin.js"></script>
+    <!-- 添加退出登录函数 -->
+    <script>
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('currentUser');
+            window.location.href = 'index.html';
+        }
+    </script>
+</body>
+</html>

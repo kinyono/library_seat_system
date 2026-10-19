@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>图书馆座位管理系统 - 登录</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/login.css">
+</head>
+<body>
+    <!-- 背景装饰 -->
+    <div class="login-bg">
+        <div class="bg-shape shape-1"></div>
+        <div class="bg-shape shape-2"></div>
+        <div class="bg-shape shape-3"></div>
+    </div>
+
+    <div class="login-container">
+        <div class="login-card">
+            <div class="login-brand">
+                <div class="brand-logo">📚</div>
+                <h1>图书馆座位管理系统</h1>
+                <p class="brand-sub">南京大学图书馆 · 智能选座</p>
+            </div>
+
+            <!-- 角色切换（使用 radio 方式） -->
+            <div class="role-switch">
+                <label class="role-option active">
+                    <input type="radio" name="role" value="student" checked onchange="switchRole('student')">
+                    <span class="role-icon">🎓</span> 学生
+                </label>
+                <label class="role-option">
+                    <input type="radio" name="role" value="admin" onchange="switchRole('admin')">
+                    <span class="role-icon">🔧</span> 管理员
+                </label>
+            </div>
+
+            <!-- 登录表单 -->
+            <form id="loginForm" class="login-form">
+                <div class="form-group">
+                    <label for="username">学号 / 工号</label>
+                    <div class="input-wrap">
+                        <span class="input-icon">👤</span>
+                        <input type="text" id="username" class="form-control" placeholder="请输入学号" required autocomplete="off">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="password">密码</label>
+                    <div class="input-wrap">
+                        <span class="input-icon">🔒</span>
+                        <input type="password" id="password" class="form-control" placeholder="请输入密码" required>
+                    </div>
+                </div>
+                <div id="loginError" class="login-error" style="display:none;"></div>
+                <button type="submit" class="btn btn-primary btn-login" id="loginBtn">登 录</button>
+            </form>
+
+            <!-- 演示提示 -->
+            <div class="demo-tip">
+                💡 演示账号：<code>2023001</code> / <code>123456</code>
+                <button class="demo-fill" onclick="fillDemo('student')">一键填入</button>
+                <br>
+                管理员：<code>admin</code> / <code>admin123</code>
+                <button class="demo-fill" onclick="fillDemo('admin')">一键填入</button>
+            </div>
+
+            <div class="login-footer">
+                <p>© 2026 图书馆座位管理系统</p>
+                <p class="copyright">仅供学习交流使用</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/login.js"></script>
+</body>
+</html>

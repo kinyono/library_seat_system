@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>个人中心 - 图书馆座位系统</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/profile.css">
+</head>
+<body>
+    <div class="profile-container">
+        <!-- 顶部导航 -->
+        <header class="profile-header">
+            <div class="header-left">
+                <h1>👤 个人中心</h1>
+                <span class="role-badge" id="userRole">学生</span>
+            </div>
+            <div class="header-right">
+                <a href="dashboard.html" class="back-link">← 返回首页</a>
+                <a href="../index.html" class="logout-link">退出</a>
+            </div>
+        </header>
+
+        <div class="profile-main">
+            <!-- 左侧：用户信息卡 -->
+            <div class="profile-card">
+                <div class="avatar">
+                    <div class="avatar-circle" id="avatarInitial">学</div>
+                </div>
+                <div class="user-meta">
+                    <div class="user-name" id="userName">用户名</div>
+                    <div class="user-id" id="userStudentId">学号: -</div>
+                    <div class="user-role" id="userRoleText">学生</div>
+                </div>
+                <div class="credit-section">
+                    <div class="credit-label">信用分</div>
+                    <div class="credit-value" id="userCredit">100</div>
+                    <div class="credit-bar">
+                        <div class="credit-bar-fill" id="creditBarFill" style="width:100%"></div>
+                    </div>
+                </div>
+                <button class="btn btn-outline btn-block" onclick="showChangePassword()">🔑 修改密码</button>
+            </div>
+
+            <!-- 右侧：预约历史 -->
+            <div class="history-card">
+                <h3>📋 预约历史</h3>
+                <div class="history-filter">
+                    <select id="historyFilter" class="form-control" onchange="loadHistory()">
+                        <option value="all">全部</option>
+                        <option value="active">进行中</option>
+                        <option value="cancelled">已取消</option>
+                        <option value="completed">已完成</option>
+                    </select>
+                </div>
+                <div id="historyList" class="history-list">
+                    <div class="history-empty">暂无预约记录</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 修改密码弹窗 -->
+    <div class="modal-overlay" id="passwordModal" style="display:none;" onclick="if(event.target===this)closePasswordModal()">
+        <div class="modal-card">
+            <h3>🔑 修改密码</h3>
+            <form id="passwordForm">
+                <div class="form-group">
+                    <label>原密码</label>
+                    <input type="password" name="oldPassword" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label>新密码</label>
+                    <input type="password" name="newPassword" class="form-control" minlength="6" required>
+                </div>
+                <div class="form-group">
+                    <label>确认新密码</label>
+                    <input type="password" name="confirmPassword" class="form-control" required>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-outline" onclick="closePasswordModal()">取消</button>
+                    <button type="submit" class="btn btn-primary">确认修改</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="../js/profile.js"></script>
+</body>
+</html>

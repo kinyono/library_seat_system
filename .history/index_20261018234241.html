@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>图书馆座位管理系统 - 登录</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/login.css">
+</head>
+<body>
+    <!-- 背景装饰 -->
+    <div class="login-bg">
+        <div class="bg-shape shape-1"></div>
+        <div class="bg-shape shape-2"></div>
+        <div class="bg-shape shape-3"></div>
+    </div>
+
+    <div class="login-container">
+        <div class="login-card">
+            <div class="login-brand">
+                <div class="brand-logo">📚</div>
+                <h1>图书馆座位管理系统</h1>
+                <p class="brand-sub">南京大学图书馆 · 智能选座</p>
+            </div>
+
+            <!-- 角色切换（radio 风格） -->
+            <div class="role-switch">
+                <label class="role-option active">
+                    <input type="radio" name="role" value="student" checked onchange="switchRole('student')">
+                    <span class="role-icon">🎓</span> 学生
+                </label>
+                <label class="role-option">
+                    <input type="radio" name="role" value="admin" onchange="switchRole('admin')">
+                    <span class="role-icon">🔧</span> 管理员
+                </label>
+            </div>
+
+            <!-- 登录表单 -->
+            <form id="loginForm" class="login-form">
+                <div class="form-group">
+                    <label for="username">学号 / 工号</label>
+                    <div class="input-wrap">
+                        <span class="input-icon">👤</span>
+                        <input type="text" id="username" class="form-control" placeholder="请输入学号" required autocomplete="off">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="password">密码</label>
+                    <div class="input-wrap">
+                        <span class="input-icon">🔒</span>
+                        <input type="password" id="password" class="form-control" placeholder="请输入密码" required>
+                    </div>
+                </div>
+                <div id="loginError" class="login-error" style="display:none;"></div>
+                <button type="submit" class="btn btn-primary btn-login" id="loginBtn">登 录</button>
+            </form>
+
+            <!-- ========== 新增：注册入口 ========== -->
+            <div class="text-center" style="margin-top: 15px;">
+                <p style="font-size: 14px; color: #666;">
+                    还没有账号？
+                    <a href="#" onclick="showRegister()" style="color: #4a90d9; text-decoration: none; font-weight: 600;">立即注册</a>
+                </p>
+            </div>
+            <!-- ==================================== -->
+
+            <!-- 演示提示 -->
+            <div class="demo-tip">
+                💡 演示账号：<code>2023001</code> / <code>123456</code>
+                <button class="demo-fill" onclick="fillDemo('student')">一键填入</button>
+                <br>
+                管理员：<code>admin</code> / <code>admin123</code>
+                <button class="demo-fill" onclick="fillDemo('admin')">一键填入</button>
+            </div>
+
+            <div class="login-footer">
+                <p>© 2026 图书馆座位管理系统</p>
+                <p class="copyright">仅供学习交流使用</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== 新增：注册弹窗（模态框） ========== -->
+    <div id="registerModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:9999;">
+        <div style="background:#fff; width:420px; margin:80px auto; padding:35px; border-radius:12px; box-shadow: 0 10px 40px rgba(0,0,0,0.2); position:relative;">
+            
+            <!-- 关闭按钮 -->
+            <button onclick="hideRegister()" style="position:absolute; top:15px; right:20px; background:none; border:none; font-size:24px; cursor:pointer; color:#999;">&times;</button>
+            
+            <h3 style="text-align:center; margin-bottom:25px; color:#333;">注册新账号</h3>
+            
+            <form id="registerForm">
+                <div class="form-group">
+                    <label for="regUsername">学号 / 工号</label>
+                    <div class="input-wrap">
+                        <span class="input-icon">👤</span>
+                        <input type="text" id="regUsername" class="form-control" placeholder="请输入学号或工号" required autocomplete="off">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="regPassword">密码（至少6位）</label>
+                    <div class="input-wrap">
+                        <span class="input-icon">🔒</span>
+                        <input type="password" id="regPassword" class="form-control" placeholder="请输入密码" required>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="regRole">角色</label>
+                    <select id="regRole" class="form-control" style="padding: 12px; border: 1px solid #ddd; border-radius: 8px; width: 100%;">
+                        <option value="student">🎓 学生</option>
+                        <option value="admin">🔧 管理员</option>
+                    </select>
+                </div>
+                
+                <div id="registerError" class="login-error" style="display:none;"></div>
+                
+                <button type="submit" class="btn btn-primary btn-login" style="margin-top:10px;">注 册</button>
+                <button type="button" class="btn btn-secondary" onclick="hideRegister()" style="width:100%; padding:12px; margin-top:8px; background:#f0f0f0; border:1px solid #ddd; border-radius:8px; cursor:pointer; color:#666;">取 消</button>
+            </form>
+        </div>
+    </div>
+    <!-- ============================================= -->
+
+    <script src="js/login.js"></script>
+    <!-- ========== 新增：注册功能的 JavaScript ========== -->
+    <script>
+        // 显示注册弹窗
+        function showRegister() {
+            document.getElementById('registerModal').style.display = 'block';
+            document.getElementById('registerError').style.display = 'none';
+        }
+
+        // 隐藏注册弹窗
+        function hideRegister() {
+            document.getElementById('registerModal').style.display = 'none';
+            document.getElementById('registerError').style.display = 'none';
+        }
+
+        // 注册表单提交
+        document.addEventListener('DOMContentLoaded', function() {
+            const registerForm = document.getElementById('registerForm');
+            if (registerForm) {
+                registerForm.addEventListener('submit', async function(e) {
+                    e.preventDefault();
+                    
+                    const username = document.getElementById('regUsername').value.trim();
+                    const password = document.getElementById('regPassword').value.trim();
+                    const role = document.getElementById('regRole').value;
+                    const errorEl = document.getElementById('registerError');
+
+                    // 基本校验
+                    if (!username || !password) {
+                        errorEl.textContent = '请填写完整信息';
+                        errorEl.style.display = 'block';
+                        return;
+                    }
+                    if (password.length < 6) {
+                        errorEl.textContent = '密码长度至少6位';
+                        errorEl.style.display = 'block';
+                        return;
+                    }
+
+                    try {
+                        const response = await fetch('/api/auth/register', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ username, password, role })
+                        });
+                        const data = await response.json();
+
+                        if (response.ok) {
+                            // 注册成功，自动登录
+                            localStorage.setItem('token', data.token);
+                            localStorage.setItem('currentUser', JSON.stringify(data.user));
+                            
+                            alert('🎉 注册成功！即将跳转...');
+                            if (data.user.role === 'admin') {
+                                window.location.href = 'admin.html';
+                            } else {
+                                window.location.href = 'pages/dashboard.html';
+                            }
+                        } else {
+                            errorEl.textContent = data.error || '注册失败，请稍后重试';
+                            errorEl.style.display = 'block';
+                        }
+                    } catch (err) {
+                        console.error('注册请求失败:', err);
+                        errorEl.textContent = '网络错误，请确认后端服务已启动（端口3000）';
+                        errorEl.style.display = 'block';
+                    }
+                });
+            }
+        });
+
+        // 点击弹窗外部关闭（可选）
+        document.addEventListener('click', function(e) {
+            const modal = document.getElementById('registerModal');
+            if (e.target === modal) {
+                hideRegister();
+            }
+        });
+    </script>
+    <!-- ============================================= -->
+</body>
+</html>

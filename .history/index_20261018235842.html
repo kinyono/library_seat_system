@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>图书馆座位管理系统 - 登录</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/login.css">
+    <!-- 优化注册弹窗的内联样式（也可放入 login.css） -->
+    <style>
+        /* ===== 注册弹窗美化 ===== */
+        .reg-modal {
+            display: none;
+            position: fixed; inset: 0;
+            background: rgba(0,0,0,.45);
+            backdrop-filter: blur(4px);
+            z-index: 9999;
+            align-items: center; justify-content: center;
+            animation: regFadeIn .25s ease;
+        }
+        .reg-modal.show { display: flex; }
+        @keyframes regFadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        .reg-modal-box {
+            background: #fff;
+            width: 380px; max-width: 92vw;
+            border-radius: 16px;
+            padding: 36px 28px 26px;
+            position: relative;
+            box-shadow: 0 20px 60px rgba(0,0,0,.25);
+            transform: translateY(20px) scale(.95);
+            opacity: 0;
+            animation: regPop .35s .05s cubic-bezier(.2,.9,.3,1.2) forwards;
+        }
+        @keyframes regPop {
+            to { transform: translateY(0) scale(1); opacity: 1; }
+        }
+
+        .reg-close {
+            position: absolute; top: 14px; right: 18px;
+            width: 32px; height: 32px;
+            border: none; background: #f3f4f6; border-radius: 50%;
+            font-size: 20px; line-height: 32px; color: #888;
+            cursor: pointer; transition: .2s;
+        }
+        .reg-close:hover { background: #e5e7eb; color: #333; transform: rotate(90deg); }
+
+        .reg-header { text-align: center; margin-bottom: 24px; }
+        .reg-header .reg-icon {
+            font-size: 42px; margin-bottom: 8px;
+            animation: regBounce 2s infinite;
+        }
+        @keyframes regBounce {
+            0%,100% { transform: translateY(0); }
+            50% { transform: translateY(-6px); }
+        }
+        .reg-header h3 { margin: 0 0 4px; font-size: 22px; color: #1f2937; }
+        .reg-header p { margin: 0; font-size: 13px; color: #9ca3af; }
+
+        .reg-field { margin-bottom: 18px; }
+        .reg-field label {
+            display: block; font-size: 13px; font-weight: 600;
+            color: #4b5563; margin-bottom: 6px;
+        }
+        .reg-field input,
+        .reg-field select {
+            width: 100%; padding: 11px 14px;
+            border: 1.5px solid #e5e7eb; border-radius: 10px;
+            font-size: 14px; outline: none;
+            transition: border .2s, box-shadow .2s;
+            box-sizing: border-box;
+        }
+        .reg-field input:focus,
+        .reg-field select:focus {
+            border-color: #6366f1;
+            box-shadow: 0 0 0 3px rgba(99,102,241,.12);
+        }
+        .reg-field.error input,
+        .reg-field.error select {
+            border-color: #ef4444;
+            box-shadow: 0 0 0 3px rgba(239,68,68,.1);
+        }
+        .reg-field-msg {
+            display: block; font-size: 12px; color: #ef4444;
+            margin-top: 5px; min-height: 16px;
+        }
+
+        /* 密码强度条 */
+        .reg-pwd-strength {
+            display: flex; align-items: center; gap: 5px;
+            margin-top: 8px;
+        }
+        .pwd-bar {
+            flex: 1; height: 4px; border-radius: 2px;
+            background: #e5e7eb; transition: .3s;
+        }
+        .pwd-bar.weak { background: #ef4444; }
+        .pwd-bar.mid  { background: #f59e0b; }
+        .pwd-bar.strong { background: #22c55e; }
+        .pwd-txt { font-size: 12px; color: #9ca3af; font-style: normal; margin-left: 4px; }
+
+        /* 注册按钮 */
+        .reg-submit {
+            width: 100%; padding: 12px;
+            border: none; border-radius: 10px;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: #fff; font-size: 16px; font-weight: 600;
+            cursor: pointer; margin-top: 10px;
+            position: relative; overflow: hidden;
+            transition: transform .15s, box-shadow .2s;
+        }
+        .reg-submit:hover { transform: translateY(-1px); box-shadow: 0 8px 20px rgba(99,102,241,.35); }
+        .reg-submit:active { transform: scale(.98); }
+        .reg-submit .reg-btn-loader {
+            display: none;
+            width: 18px; height: 18px;
+            border: 2.5px solid rgba(255,255,255,.4);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: regSpin .6s linear infinite;
+            position: absolute; left: 50%; top: 50%;
+            margin: -9px 0 0 -9px;
+        }
+        .reg-submit.loading .reg-btn-txt { opacity: 0; }
+        .reg-submit.loading .reg-btn-loader { display: block; }
+        @keyframes regSpin { to { transform: rotate(360deg); } }
+
+        /* ===== Toast 提示 ===== */
+        .toast {
+            position: fixed; top: 24px; left: 50%;
+            transform: translateX(-50%) translateY(-80px);
+            padding: 12px 22px; border-radius: 10px;
+            color: #fff; font-size: 14px; font-weight: 500;
+            z-index: 20000;
+            box-shadow: 0 8px 24px rgba(0,0,0,.18);
+            transition: transform .35s cubic-bezier(.2,.9,.3,1.2), opacity .3s;
+            opacity: 0; pointer-events: none;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+        .toast.success { background: linear-gradient(135deg, #22c55e, #16a34a); }
+        .toast.error   { background: linear-gradient(135deg, #ef4444, #dc2626); }
+        .toast.info    { background: linear-gradient(135deg, #6366f1, #8b5cf6); }
+    </style>
+</head>
+<body>
+    <!-- 背景装饰 -->
+    <div class="login-bg">
+        <div class="bg-shape shape-1"></div>
+        <div class="bg-shape shape-2"></div>
+        <div class="bg-shape shape-3"></div>
+    </div>
+
+    <div class="login-container">
+        <div class="login-card">
+            <div class="login-brand">
+                <div class="brand-logo">📚</div>
+                <h1>图书馆座位管理系统</h1>
+                <p class="brand-sub">南京大学图书馆 · 智能选座</p>
+            </div>
+
+            <!-- 角色切换 -->
+            <div class="role-switch">
+                <label class="role-option active">
+                    <input type="radio" name="role" value="student" checked onchange="switchRole('student')">
+                    <span class="role-icon">🎓</span> 学生
+                </label>
+                <label class="role-option">
+                    <input type="radio" name="role" value="admin" onchange="switchRole('admin')">
+                    <span class="role-icon">🔧</span> 管理员
+                </label>
+            </div>
+
+            <!-- 登录表单 -->
+            <form id="loginForm" class="login-form">
+                <div class="form-group">
+                    <label for="username">学号 / 工号</label>
+                    <div class="input-wrap">
+                        <span class="input-icon">👤</span>
+                        <input type="text" id="username" class="form-control" placeholder="请输入学号" required autocomplete="off">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="password">密码</label>
+                    <div class="input-wrap">
+                        <span class="input-icon">🔒</span>
+                        <input type="password" id="password" class="form-control" placeholder="请输入密码" required>
+                    </div>
+                </div>
+                <div id="loginError" class="login-error" style="display:none;"></div>
+                <button type="submit" class="btn btn-primary btn-login" id="loginBtn">登 录</button>
+            </form>
+
+            <!-- 注册入口 -->
+            <div class="text-center" style="margin-top: 15px;">
+                <p style="font-size: 14px; color: #666;">
+                    还没有账号？
+                    <a href="#" onclick="showRegister()" style="color: #4a90d9; text-decoration: none; font-weight: 600;">立即注册</a>
+                </p>
+            </div>
+
+            <!-- 演示提示 -->
+            <div class="demo-tip">
+                💡 演示账号：<code>2023001</code> / <code>123456</code>
+                <button class="demo-fill" onclick="fillDemo('student')">一键填入</button>
+                <br>
+                管理员：<code>admin</code> / <code>admin123</code>
+                <button class="demo-fill" onclick="fillDemo('admin')">一键填入</button>
+            </div>
+
+            <div class="login-footer">
+                <p>© 2026 图书馆座位管理系统</p>
+                <p class="copyright">仅供学习交流使用</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== 优化版注册弹窗 ===== -->
+    <div id="registerModal" class="reg-modal">
+        <div class="reg-modal-box">
+            <button class="reg-close" onclick="hideRegister()">&times;</button>
+            <div class="reg-header">
+                <div class="reg-icon">🎓</div>
+                <h3>注册新账号</h3>
+                <p>加入图书馆座位管理系统</p>
+            </div>
+            <form id="registerForm">
+                <div class="reg-field">
+                    <label>👤 学号 / 工号</label>
+                    <input type="text" id="regUsername" placeholder="请输入学号或工号" autocomplete="off">
+                    <span class="reg-field-msg"></span>
+                </div>
+                <div class="reg-field">
+                    <label>🔒 密码</label>
+                    <input type="password" id="regPassword" placeholder="至少 6 位">
+                    <div class="reg-pwd-strength">
+                        <span class="pwd-bar"></span>
+                        <span class="pwd-bar"></span>
+                        <span class="pwd-bar"></span>
+                        <em class="pwd-txt">密码强度</em>
+                    </div>
+                </div>
+                <div class="reg-field">
+                    <label>🎭 角色</label>
+                    <select id="regRole">
+                        <option value="student">🎓 学生</option>
+                        <option value="admin">🔧 管理员</option>
+                    </select>
+                </div>
+                <button type="submit" class="reg-submit" id="regSubmit">
+                    <span class="reg-btn-txt">注 册</span>
+                    <span class="reg-btn-loader"></span>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script src="js/login.js"></script>
+    <script>
+        // ===== 注册弹窗控制 =====
+        function showRegister() {
+            const m = document.getElementById('registerModal');
+            m.classList.add('show');
+            // 重置表单和错误
+            document.getElementById('registerForm').reset();
+            clearFieldMsg();
+            document.querySelectorAll('.pwd-bar').forEach(b => b.className = 'pwd-bar');
+            document.querySelector('.pwd-txt').textContent = '密码强度';
+            setTimeout(() => document.getElementById('regUsername').focus(), 150);
+        }
+        function hideRegister() {
+            document.getElementById('registerModal').classList.remove('show');
+            clearFieldMsg();
+        }
+        function clearFieldMsg() {
+            document.querySelectorAll('.reg-field-msg').forEach(s => s.textContent = '');
+            document.querySelectorAll('.reg-field').forEach(f => f.classList.remove('error'));
+        }
+
+        // ===== Toast 提示 =====
+        function toast(msg, type = 'info') {
+            let t = document.getElementById('toast');
+            if (!t) {
+                t = document.createElement('div');
+                t.id = 'toast'; t.className = 'toast';
+                document.body.appendChild(t);
+            }
+            t.className = 'toast ' + type;
+            t.innerHTML = (type === 'success' ? '✅ ' : type === 'error' ? '⚠️ ' : 'ℹ️ ') + msg;
+            void t.offsetWidth; // 强制重排
+            t.classList.add('show');
+            clearTimeout(t._timer);
+            t._timer = setTimeout(() => t.classList.remove('show'), 2800);
+        }
+
+        // ===== 密码强度实时检测 =====
+        document.getElementById('regPassword').addEventListener('input', function() {
+            const val = this.value;
+            const bars = document.querySelectorAll('.pwd-bar');
+            const txt  = document.querySelector('.pwd-txt');
+            let level = 0;
+            if (val.length >= 6) level++;
+            if (val.length >= 10 && /[A-Z]/.test(val) && /\d/.test(val)) level++;
+            if (val.length >= 12 && /[^A-Za-z0-9]/.test(val)) level++;
+            bars.forEach((b, i) => {
+                b.className = 'pwd-bar';
+                if (val.length === 0) return;
+                if (i < level) b.classList.add(level === 1 ? 'weak' : level === 2 ? 'mid' : 'strong');
+            });
+            txt.textContent = val.length === 0 ? '密码强度'
+                : level === 1 ? '弱' : level === 2 ? '中' : '强';
+        });
+
+        // ===== 注册提交 =====
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('registerForm');
+            if (!form) return;
+            form.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                clearFieldMsg();
+
+                const username = document.getElementById('regUsername').value.trim();
+                const password = document.getElementById('regPassword').value;
+                const role     = document.getElementById('regRole').value;
+                let valid = true;
+
+                if (!username) { setFieldMsg('regUsername', '请输入学号/工号'); valid = false; }
+                if (!password) { setFieldMsg('regPassword', '请输入密码'); valid = false; }
+                else if (password.length < 6) { setFieldMsg('regPassword', '密码至少 6 位'); valid = false; }
+                if (!valid) return;
+
+                const btn = document.getElementById('regSubmit');
+                btn.classList.add('loading');
+                btn.disabled = true;
+
+                try {
+                    const res  = await fetch('/api/auth/register', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ username, password, role })
+                    });
+                    const data = await res.json();
+
+                    if (res.ok) {
+                        localStorage.setItem('token', data.token);
+                        localStorage.setItem('currentUser', JSON.stringify(data.user));
+                        toast('注册成功！正在跳转…', 'success');
+                        setTimeout(() => {
+                            window.location.href = role === 'admin' ? 'admin.html' : 'pages/dashboard.html';
+                        }, 800);
+                    } else {
+                        if (data.error && data.error.includes('已注册')) {
+                            setFieldMsg('regUsername', data.error);
+                        } else {
+                            toast(data.error || '注册失败', 'error');
+                        }
+                    }
+                } catch (err) {
+                    toast('网络错误，请确认后端已启动', 'error');
+                } finally {
+                    btn.classList.remove('loading');
+                    btn.disabled = false;
+                }
+            });
+
+            // 点击遮罩关闭
+            document.getElementById('registerModal').addEventListener('click', function(e) {
+                if (e.target === this) hideRegister();
+            });
+            // ESC 关闭
+            document.addEventListener('keydown', e => {
+                if (e.key === 'Escape') hideRegister();
+            });
+        });
+
+        function setFieldMsg(id, msg) {
+            const input = document.getElementById(id);
+            const field = input.closest('.reg-field');
+            field.classList.add('error');
+            field.querySelector('.reg-field-msg').textContent = msg;
+        }
+    </script>
+</body>
+</html>

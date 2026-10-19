@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>数据统计 - 图书馆座位系统</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/statistics.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+    <div class="dashboard-container">
+        <header class="dashboard-header">
+            <div class="header-left">
+                <h1>📊 数据统计</h1>
+            </div>
+            <div class="header-right">
+                <div class="period-switch">
+                    <button class="period-btn active" data-period="week">本周</button>
+                    <button class="period-btn" data-period="month">本月</button>
+                    <button class="period-btn" data-period="all">全部</button>
+                </div>
+                <a href="dashboard.html" class="profile-link">← 返回主页</a>
+                <a href="../index.html" class="logout-link">退出</a>
+            </div>
+        </header>
+
+        <div class="stats-row" id="overviewCards">
+            <div class="stat-card">
+                <div class="stat-value" id="totalHours">0</div>
+                <div class="stat-label">累计学习时长（小时）</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="totalBookings">0</div>
+                <div class="stat-label">累计预约次数</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="avgDuration">0</div>
+                <div class="stat-label">平均单次时长（分钟）</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="totalPenalty">0</div>
+                <div class="stat-label">累计扣分</div>
+            </div>
+        </div>
+
+        <div class="charts-grid">
+            <div class="chart-card span-2">
+                <div class="chart-header">
+                    <h3>学习时长趋势</h3>
+                </div>
+                <div class="chart-wrap"><canvas id="trendChart"></canvas></div>
+            </div>
+            <div class="chart-card">
+                <h3>座位实时余量</h3>
+                <div class="chart-wrap"><canvas id="seatAvailabilityChart"></canvas></div>
+            </div>
+            <div class="chart-card">
+                <h3>区域偏好</h3>
+                <div class="chart-wrap"><canvas id="areaChart"></canvas></div>
+            </div>
+            <div class="chart-card">
+                <h3>楼层偏好</h3>
+                <div class="chart-wrap"><canvas id="floorChart"></canvas></div>
+            </div>
+            <div class="chart-card">
+                <h3>电源需求</h3>
+                <div class="chart-wrap"><canvas id="powerChart"></canvas></div>
+            </div>
+            <div class="chart-card">
+                <h3>每日学习峰值（按起始时段）</h3>
+                <div class="chart-wrap"><canvas id="peakChart"></canvas></div>
+            </div>
+        </div>
+    </div>
+    <script src="../js/statistics.js"></script>
+</body>
+</html>

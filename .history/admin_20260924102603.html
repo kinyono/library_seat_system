@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>管理后台 - 图书馆座位系统</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+    <div class="admin-container">
+        <!-- 顶部栏 -->
+        <header class="admin-header">
+            <div class="header-left">
+                <h1>🛠️ 管理后台</h1>
+                <span class="admin-badge" id="adminName">管理员</span>
+            </div>
+            <div class="header-right">
+                <div class="realtime-clock" id="realtimeClock">--:--:--</div>
+                <a href="index.html" class="back-link">← 返回首页</a>
+            </div>
+        </header>
+
+        <!-- 统计卡片 -->
+        <div class="stats-row" id="adminStats">
+            <div class="stat-card">
+                <div class="stat-value" id="statTotal">0</div>
+                <div class="stat-label">总座位数</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="statFree">0</div>
+                <div class="stat-label">空闲座位</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="statUsed">0</div>
+                <div class="stat-label">使用中 / 暂离</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="statActiveBookings">0</div>
+                <div class="stat-label">进行中预约</div>
+            </div>
+        </div>
+
+        <!-- Tab 切换 -->
+        <div class="tabs">
+            <button class="tab-btn active" data-tab="seats">座位管理</button>
+            <button class="tab-btn" data-tab="users">用户管理</button>
+            <button class="tab-btn" data-tab="bookings">预约记录</button>
+            <button class="tab-btn" data-tab="rules">规则配置</button>
+        </div>
+
+        <!-- 座位管理 -->
+        <div class="tab-content active" id="tab-seats">
+            <div class="tab-toolbar">
+                <button class="btn btn-primary" onclick="showAddSeatForm()">+ 添加座位</button>
+                <span class="toolbar-hint">点击行内「编辑」可修改楼层 / 区域 / 电源</span>
+            </div>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>编号</th><th>楼层</th><th>区域</th><th>电源</th>
+                            <th>状态</th><th>启用</th><th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="seatsTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 用户管理 -->
+        <div class="tab-content" id="tab-users">
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr><th>姓名</th><th>学号</th><th>信用分</th><th>状态</th><th>操作</th></tr>
+                    </thead>
+                    <tbody id="usersTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 预约记录 -->
+        <div class="tab-content" id="tab-bookings">
+            <div class="tab-toolbar">
+                <button class="btn btn-secondary" onclick="renderBookings()">🔄 刷新</button>
+            </div>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr><th>用户</th><th>座位</th><th>日期</th><th>时段</th><th>状态</th><th>操作</th></tr>
+                    </thead>
+                    <tbody id="bookingsTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 规则配置 -->
+        <div class="tab-content" id="tab-rules">
+            <div class="rules-grid">
+                <div class="rule-card">
+                    <h4>⏱ 预约时长</h4>
+                    <div class="form-group">
+                        <label>最长预约（分钟）</label>
+                        <input type="number" id="ruleMaxMinutes" class="form-control" value="240">
+                    </div>
+                    <div class="form-group">
+                        <label>签到宽限（分钟）</label>
+                        <input type="number" id="ruleGraceMinutes" class="form-control" value="15">
+                    </div>
+                </div>
+                <div class="rule-card">
+                    <h4>🚶 暂离规则</h4>
+                    <div class="form-group">
+                        <label>暂离时长（分钟）</label>
+                        <input type="number" id="ruleAwayMinutes" class="form-control" value="45">
+                    </div>
+                    <div class="form-group">
+                        <label>每日可用次数</label>
+                        <input type="number" id="ruleAwayTimes" class="form-control" value="3">
+                    </div>
+                    <div class="form-group">
+                        <label>超时扣分</label>
+                        <input type="number" id="ruleAwayPenalty" class="form-control" value="10">
+                    </div>
+                </div>
+                <div class="rule-card">
+                    <h4>🏫 上课保留</h4>
+                    <div class="form-group">
+                        <label>保留时长（分钟）</label>
+                        <input type="number" id="ruleClassMinutes" class="form-control" value="120">
+                    </div>
+                    <div class="form-group">
+                        <label>每日可用次数</label>
+                        <input type="number" id="ruleClassTimes" class="form-control" value="1">
+                    </div>
+                    <div class="form-group">
+                        <label>超时扣分</label>
+                        <input type="number" id="ruleClassPenalty" class="form-control" value="20">
+                    </div>
+                    <div class="form-group">
+                        <label>最低信用分要求</label>
+                        <input type="number" id="ruleClassMinCredit" class="form-control" value="80">
+                    </div>
+                </div>
+            </div>
+            <button class="btn btn-primary" onclick="saveRules()" style="margin-top:20px;">💾 保存规则</button>
+        </div>
+    </div>
+
+    <!-- 添加座位弹窗 -->
+    <div class="modal-mask" id="addSeatModal" style="display:none;">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3>+ 添加座位</h3>
+                <span class="modal-close" onclick="closeAddSeatForm()">✕</span>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>座位编号</label>
+                    <input type="text" id="newSeatCode" class="form-control" placeholder="如 A01">
+                </div>
+                <div class="form-group">
+                    <label>楼层</label>
+                    <input type="number" id="newSeatFloor" class="form-control" value="1" min="1" max="5">
+                </div>
+                <div class="form-group">
+                    <label>区域</label>
+                    <select id="newSeatArea" class="form-control">
+                        <option value="quiet">静音区</option>
+                        <option value="discuss">讨论区</option>
+                        <option value="window">靠窗区</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>有电源</label>
+                    <select id="newSeatPower" class="form-control">
+                        <option value="1">有</option>
+                        <option value="0">无</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeAddSeatForm()">取消</button>
+                <button class="btn btn-primary" onclick="submitAddSeat()">确认添加</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/admin.js"></script>
+</body>
+</html>

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>座位预约 - 图书馆座位系统</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/dashboard.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <header class="dashboard-header">
+            <h1>📚 座位预约</h1>
+            <div class="header-right">
+                <div class="user-info">
+                    <span id="userName"></span>
+                    <span class="role-badge" id="userRole">学生</span>
+                    <span>信用分：<strong id="userCredit">100</strong></span>
+                </div>
+                <a href="../index.html" class="logout-link">退出登录</a>
+            </div>
+        </header>
+
+        <div class="stats-row">
+            <div class="stat-card">
+                <div class="stat-value" id="totalSeats">0</div>
+                <div class="stat-label">总座位数</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="freeSeats">0</div>
+                <div class="stat-label">空闲座位</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="usedSeats">0</div>
+                <div class="stat-label">使用中</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="myBookingsCount">0</div>
+                <div class="stat-label">我的预约</div>
+            </div>
+        </div>
+
+        <div class="main-layout">
+            <div class="left-panel">
+                <div class="filter-bar">
+                    <select id="filterFloor" class="form-control">
+                        <option value="all">全部楼层</option>
+                        <option value="1">1F</option>
+                        <option value="2">2F</option>
+                        <option value="3">3F</option>
+                    </select>
+                    <select id="filterArea" class="form-control">
+                        <option value="all">全部区域</option>
+                        <option value="quiet">静音区</option>
+                        <option value="discuss">讨论区</option>
+                        <option value="window">靠窗区</option>
+                    </select>
+                </div>
+                <div class="seat-grid" id="seatGrid"></div>
+                <div class="legend">
+                    <span class="legend-item"><span class="legend-dot free"></span>空闲</span>
+                    <span class="legend-item"><span class="legend-dot reserved"></span>已预约</span>
+                    <span class="legend-item"><span class="legend-dot used"></span>使用中</span>
+                    <span class="legend-item"><span class="legend-dot away"></span>暂离</span>
+                    <span class="legend-item"><span class="legend-dot maintenance"></span>维修</span>
+                </div>
+            </div>
+
+            <div class="right-panel">
+                <div>
+                    <h3>📍 座位详情</h3>
+                    <div class="detail-row"><span class="label">编号</span><span id="detailCode">-</span></div>
+                    <div class="detail-row"><span class="label">楼层</span><span id="detailFloor">-</span></div>
+                    <div class="detail-row"><span class="label">区域</span><span id="detailArea">-</span></div>
+                    <div class="detail-row"><span class="label">电源</span><span id="detailPower">-</span></div>
+                    <div class="detail-row"><span class="label">状态</span><span id="detailStatus">-</span></div>
+                    <div id="seatActions"></div>
+                </div>
+                <div>
+                    <h3>📋 我的预约</h3>
+                    <ul id="myBookingsList"></ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="timer-panel" id="timerPanel" style="display:none;">
+        <div class="timer-label" id="timerLabel">暂离中</div>
+        <div class="timer-remaining" id="timerRemaining">45:00</div>
+        <div class="progress-bar">
+            <div class="progress-bar-inner" id="timerProgress" style="width:100%"></div>
+        </div>
+    </div>
+
+    <script src="../js/dashboard.js"></script>
+</body>
+</html>

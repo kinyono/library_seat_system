@@ -1,0 +1,120 @@
+/* ===== 个人中心 ===== */
+.profile-container { max-width: 880px; margin: 0 auto; padding: 24px; }
+.profile-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 28px;
+    background: var(--bg-surface);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+    gap: 12px;
+    border: 1px solid var(--border);
+}
+.header-left { display: flex; align-items: center; gap: 12px; }
+.header-left h1 { font-size: 20px; font-weight: 700; }
+.header-right { display: flex; align-items: center; gap: 16px; }
+.back-link { color: var(--primary); font-weight: 600; font-size: 13px; transition: var(--transition-fast); }
+.back-link:hover { opacity: 0.7; text-decoration: underline; }
+.logout-link { color: var(--danger); font-weight: 600; font-size: 13px; transition: var(--transition-fast); }
+.logout-link:hover { opacity: 0.7; text-decoration: underline; }
+.role-badge { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: #fff; padding: 4px 12px; border-radius: 999px; font-size: 12px; font-weight: 600; box-shadow: var(--shadow-primary); }
+
+/* 主体 */
+.profile-main { display: grid; grid-template-columns: 280px 1fr; gap: 24px; }
+@media (max-width: 700px) { .profile-main { grid-template-columns: 1fr; } }
+
+/* 左侧信息卡 */
+.profile-card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 30px 22px;
+    text-align: center;
+    box-shadow: var(--shadow-sm);
+    height: fit-content;
+}
+.avatar { margin-bottom: 16px; }
+.avatar-circle {
+    width: 66px; height: 66px; margin: 0 auto;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 26px; font-weight: 700;
+    box-shadow: var(--shadow-primary);
+}
+.user-meta { margin-bottom: 20px; }
+.user-name { font-size: 18px; font-weight: 700; color: var(--text-primary); }
+.user-id { font-size: 12.5px; color: var(--text-secondary); margin-top: 4px; }
+.user-role { font-size: 12px; color: var(--primary); margin-top: 3px; font-weight: 600; }
+
+.credit-section { margin-bottom: 20px; }
+.credit-label { font-size: 12px; color: var(--text-secondary); font-weight: 500; }
+.credit-value { font-size: 32px; font-weight: 800; color: var(--primary); line-height: 1.2; }
+.credit-bar { height: 7px; background: var(--border); border-radius: 99px; margin-top: 10px; overflow: hidden; }
+.credit-bar-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--primary)); border-radius: 99px; transition: width 0.5s ease; }
+
+/* 右侧历史 */
+.history-card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 22px;
+    box-shadow: var(--shadow-sm);
+}
+.history-card h3 { font-size: 16px; font-weight: 700; margin-bottom: 16px; }
+.history-filter { margin-bottom: 14px; }
+.history-filter select { width: 160px; }
+.history-list { max-height: 460px; overflow-y: auto; }
+.history-item {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 12px 0; border-bottom: 1px solid var(--border); font-size: 13.5px;
+}
+.history-item:last-child { border-bottom: none; }
+.hi-left { display: flex; flex-direction: column; gap: 2px; }
+.hi-seat { font-weight: 600; }
+.hi-date { color: var(--text-muted); font-size: 12px; }
+.hi-status { font-size: 11px; padding: 3px 10px; border-radius: 999px; font-weight: 600; }
+.history-empty { text-align: center; color: var(--text-muted); padding: 48px 0; font-size: 13.5px; }
+
+/* 状态标签配色 */
+.status-active { background: var(--info-light); color: var(--info); }
+.status-used { background: var(--primary); color: #fff; }
+.status-away { background: rgba(236,72,153,0.12); color: var(--accent); }
+.status-class { background: rgba(139,92,246,0.12); color: var(--secondary); }
+.status-cancelled { background: var(--danger-light); color: var(--danger); }
+.status-completed { background: var(--success-light); color: var(--success); }
+
+/* 弹窗 */
+.modal-overlay {
+    position: fixed; inset: 0;
+    background: rgba(15,23,42,0.5);
+    backdrop-filter: blur(4px);
+    display: none; z-index: 750;
+    align-items: center; justify-content: center;
+}
+.modal-card {
+    background: #fff;
+    border-radius: var(--radius-lg);
+    padding: 28px 36px;
+    width: 340px;
+    max-width: 88vw;
+    box-shadow: var(--shadow-lg);
+    animation: popIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+@keyframes popIn {
+    from { opacity: 0; transform: scale(0.92); }
+    to { opacity: 1; transform: scale(1); }
+}
+.modal-card h3 { margin-bottom: 18px; font-size: 17px; font-weight: 700; }
+.modal-card .form-group { margin-bottom: 14px; }
+.modal-card label { display: block; font-size: 13px; color: var(--text-secondary); margin-bottom: 4px; font-weight: 600; }
+.modal-card .form-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; }
+
+@media (max-width: 660px) {
+    .profile-main { grid-template-columns: 1fr; }
+    .profile-card { width: 100%; }
+}

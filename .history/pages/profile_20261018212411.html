@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>个人中心 - 图书馆座位系统</title>
+    <link rel="stylesheet" href="profile.css">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <!-- 顶部导航 -->
+        <header class="header card">
+            <div class="header-left">
+                <a href="dashboard.html" class="back-btn"><i class="ri-arrow-left-line"></i> 返回主页</a>
+            </div>
+            <h2><i class="ri-user-line"></i> 个人中心</h2>
+            <button class="logout-btn" onclick="logout()">退出 <i class="ri-logout-box-r-line"></i></button>
+        </header>
+
+        <!-- 基本资料卡片 -->
+        <div class="card profile-card">
+            <div class="avatar">
+                <i class="ri-user-face-fill"></i>
+            </div>
+            <div class="info">
+                <h3 id="userName">加载中...</h3>
+                <p id="userRole">角色：学生</p>
+            </div>
+            <div class="credit-box">
+                <span>信用分</span>
+                <strong id="userCredit">100</strong>
+            </div>
+        </div>
+
+        <!-- 当前预约 -->
+        <div class="card">
+            <h4 class="card-title"><i class="ri-calendar-check-line"></i> 当前预约</h4>
+            <div id="currentBooking" class="empty-state">暂无进行中的预约</div>
+        </div>
+
+        <!-- 历史与违规记录 -->
+        <div class="card">
+            <h4 class="card-title"><i class="ri-history-line"></i> 近期记录</h4>
+            <div id="historyList" class="history-list">
+                <div class="empty-state">暂无历史记录</div>
+            </div>
+        </div>
+    </div>
+    <script src="profile.js"></script>
+</body>
+</html>

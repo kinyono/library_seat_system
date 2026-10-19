@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>座位预约 - 图书馆座位系统</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/dashboard.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- 顶部导航 -->
+        <header class="dashboard-header">
+            <div class="header-left">
+                <h1>📚 座位预约</h1>
+                <span class="role-badge" id="userRole">学生</span>
+            </div>
+            <div class="header-right">
+                <div class="user-info">
+                    <span id="userName">用户</span>
+                    <span>信用分：<strong id="userCredit">100</strong></span>
+                </div>
+                <div class="realtime-clock" id="realtimeClock">--:--:--</div>
+                <a href="../index.html" class="logout-link">退出</a>
+            </div>
+        </header>
+
+        <!-- 统计卡片 -->
+        <div class="stats-row">
+            <div class="stat-card">
+                <div class="stat-value" id="statTotal">0</div>
+                <div class="stat-label">总座位</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="statFree">0</div>
+                <div class="stat-label">空闲</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="statUsed">0</div>
+                <div class="stat-label">使用中</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="statMine">0</div>
+                <div class="stat-label">我的预约</div>
+            </div>
+        </div>
+
+        <div class="main-layout">
+            <!-- 左侧：座位网格 -->
+            <div class="left-panel">
+                <div class="filter-bar">
+                    <select id="filterFloor" class="form-control">
+                        <option value="all">全部楼层</option>
+                        <option value="1">1F</option>
+                        <option value="2">2F</option>
+                        <option value="3">3F</option>
+                    </select>
+                    <select id="filterArea" class="form-control">
+                        <option value="all">全部区域</option>
+                        <option value="quiet">静音区</option>
+                        <option value="discuss">讨论区</option>
+                        <option value="window">靠窗区</option>
+                    </select>
+                    <select id="prefArea" class="form-control" title="偏好区域（影响推荐）">
+                        <option value="quiet">偏好：静音区</option>
+                        <option value="discuss">偏好：讨论区</option>
+                        <option value="window">偏好：靠窗区</option>
+                    </select>
+                    <button class="btn btn-sm btn-outline" onclick="refreshRecommend()">🔄 换一批</button>
+                </div>
+
+                <div class="seat-grid" id="seatGrid">
+                    <!-- 骨架屏占位 -->
+                    <div class="skeleton" style="height:80px;"></div>
+                    <div class="skeleton" style="height:80px;"></div>
+                    <div class="skeleton" style="height:80px;"></div>
+                    <div class="skeleton" style="height:80px;"></div>
+                </div>
+
+                <div class="legend">
+                    <span class="legend-item"><span class="legend-dot free"></span>空闲</span>
+                    <span class="legend-item"><span class="legend-dot reserved"></span>已预约</span>
+                    <span class="legend-item"><span class="legend-dot used"></span>使用中</span>
+                    <span class="legend-item"><span class="legend-dot away"></span>暂离</span>
+                    <span class="legend-item"><span class="legend-dot maintenance"></span>维修</span>
+                </div>
+            </div>
+
+            <!-- 右侧：详情 + 推荐 -->
+            <div class="right-panel">
+                <div class="detail-card" id="detailCard">
+                    <h3>📍 座位详情</h3>
+                    <div class="detail-row"><span class="label">编号</span><span id="detailCode">-</span></div>
+                    <div class="detail-row"><span class="label">楼层</span><span id="detailFloor">-</span></div>
+                    <div class="detail-row"><span class="label">区域</span><span id="detailArea">-</span></div>
+                    <div class="detail-row"><span class="label">电源</span><span id="detailPower">-</span></div>
+                    <div class="detail-row"><span class="label">状态</span><span id="detailStatus">-</span></div>
+                    <div class="detail-row" id="recScoreRow" style="display:none;"><span class="label">推荐度</span><span id="detailScore">-</span></div>
+                    <div id="seatActions" class="seat-actions"></div>
+                </div>
+
+                <div class="recommend-card" id="recommendCard">
+                    <h3>⭐ 为你推荐</h3>
+                    <div id="recommendList">
+                        <div class="recommend-empty">选择偏好后自动推荐</div>
+                    </div>
+                </div>
+
+                <div class="my-bookings-card">
+                    <h3>📋 我的预约</h3>
+                    <ul id="myBookingsList"></ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 倒计时面板 -->
+    <div class="timer-panel" id="timerPanel" style="display:none;">
+        <div class="timer-label" id="timerLabel">暂离中</div>
+        <div class="timer-remaining" id="timerRemaining">45:00</div>
+        <div class="progress-bar">
+            <div class="progress-bar-inner" id="timerProgress" style="width:100%"></div>
+        </div>
+    </div>
+
+    <script src="../js/recommend.js"></script>
+    <script src="../js/dashboard.js"></script>
+</body>
+</html>

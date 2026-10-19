@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>管理员后台 - 图书馆座位系统</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+    <div class="admin-container">
+        <!-- 顶部导航 -->
+        <header class="admin-header">
+            <div class="header-left">
+                <h1>⚙️ 管理员后台</h1>
+                <span class="role-badge">管理员</span>
+            </div>
+            <div class="header-right">
+                <!-- 👇 新增个人中心入口（指向 pages/profile.html） -->
+                <a href="pages/profile.html" class="profile-link">👤 个人中心</a>
+                <div class="realtime-clock" id="realtimeClock">--:--:--</div>
+                <a href="index.html" class="logout-link">退出</a>
+            </div>
+        </header>
+
+        <!-- 统计卡片 -->
+        <div class="stats-row">
+            <div class="stat-card">
+                <div class="stat-value" id="statTotal">0</div>
+                <div class="stat-label">总座位</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="statFree">0</div>
+                <div class="stat-label">空闲</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="statUsed">0</div>
+                <div class="stat-label">使用中</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="statUsers">0</div>
+                <div class="stat-label">注册用户</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="statBookings">0</div>
+                <div class="stat-label">今日预约</div>
+            </div>
+        </div>
+
+        <!-- Tab 切换 -->
+        <div class="tab-bar">
+            <button class="tab-btn active" data-tab="seats">座位管理</button>
+            <button class="tab-btn" data-tab="users">用户管理</button>
+            <button class="tab-btn" data-tab="rules">规则设置</button>
+            <button class="tab-btn" data-tab="logs">操作日志</button>
+        </div>
+
+        <!-- Tab 内容 -->
+        <div class="tab-contents">
+
+            <!-- 座位管理 -->
+            <div class="tab-content active" id="tab-seats">
+                <div class="toolbar">
+                    <button class="btn btn-primary" onclick="openAddSeatModal()">➕ 添加座位</button>
+                    <button class="btn btn-outline" onclick="resetAllSeats()">🔄 重置所有座位</button>
+                </div>
+                <div class="table-wrapper">
+                    <table class="data-table" id="seatTable">
+                        <thead>
+                            <tr>
+                                <th>编号</th><th>楼层</th><th>区域</th><th>电源</th><th>状态</th><th>启用</th><th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="seatTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 用户管理 -->
+            <div class="tab-content" id="tab-users">
+                <div class="toolbar">
+                    <input type="text" id="userSearch" class="form-control search-input" placeholder="搜索学号/姓名...">
+                </div>
+                <div class="table-wrapper">
+                    <table class="data-table" id="userTable">
+                        <thead>
+                            <tr>
+                                <th>ID</th><th>姓名</th><th>学号</th><th>信用分</th><th>状态</th><th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="userTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 规则设置 -->
+            <div class="tab-content" id="tab-rules">
+                <form id="rulesForm" class="rules-form">
+                    <div class="form-group">
+                        <label>最大预约时长（分钟）</label>
+                        <input type="number" name="maxMinutes" class="form-control" min="30" max="480">
+                    </div>
+                    <div class="form-group">
+                        <label>签到宽限时间（分钟）</label>
+                        <input type="number" name="graceMinutes" class="form-control" min="5" max="60">
+                    </div>
+                    <div class="form-group">
+                        <label>暂离时长（分钟）</label>
+                        <input type="number" name="awayMinutes" class="form-control" min="10" max="120">
+                    </div>
+                    <div class="form-group">
+                        <label>暂离次数限制</label>
+                        <input type="number" name="awayTimes" class="form-control" min="1" max="10">
+                    </div>
+                    <div class="form-group">
+                        <label>暂离超时扣分</label>
+                        <input type="number" name="awayPenalty" class="form-control" min="0" max="50">
+                    </div>
+                    <div class="form-group">
+                        <label>上课保留时长（分钟）</label>
+                        <input type="number" name="classMinutes" class="form-control" min="30" max="240">
+                    </div>
+                    <div class="form-group">
+                        <label>上课保留次数限制</label>
+                        <input type="number" name="classTimes" class="form-control" min="1" max="10">
+                    </div>
+                    <div class="form-group">
+                        <label>上课保留超时扣分</label>
+                        <input type="number" name="classPenalty" class="form-control" min="0" max="50">
+                    </div>
+                    <div class="form-group">
+                        <label>上课保留最低信用分</label>
+                        <input type="number" name="classMinCredit" class="form-control" min="0" max="100">
+                    </div>
+                    <button type="submit" class="btn btn-primary">💾 保存规则</button>
+                </form>
+            </div>
+
+            <!-- 操作日志 -->
+            <div class="tab-content" id="tab-logs">
+                <div class="toolbar">
+                    <button class="btn btn-outline" onclick="clearLogs()">🗑️ 清空日志</button>
+                </div>
+                <div class="log-list" id="logList">
+                    <div class="log-empty">暂无操作记录</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 添加座位弹窗 -->
+    <div class="modal-overlay" id="addSeatModal" style="display:none;" onclick="if(event.target===this)closeAddSeatModal()">
+        <div class="modal-card">
+            <h3>➕ 添加新座位</h3>
+            <form id="addSeatForm">
+                <div class="form-group">
+                    <label>楼层</label>
+                    <select name="floor" class="form-control" required>
+                        <option value="1">1F</option>
+                        <option value="2">2F</option>
+                        <option value="3">3F</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>区域</label>
+                    <select name="area" class="form-control" required>
+                        <option value="quiet">静音区</option>
+                        <option value="discuss">讨论区</option>
+                        <option value="window">靠窗区</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>座位编号（如 A-01）</label>
+                    <input type="text" name="code" class="form-control" placeholder="例如 A-01" required>
+                </div>
+                <div class="form-group">
+                    <label>是否有电源</label>
+                    <select name="hasPower" class="form-control">
+                        <option value="true">是</option>
+                        <option value="false">否</option>
+                    </select>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-outline" onclick="closeAddSeatModal()">取消</button>
+                    <button type="submit" class="btn btn-primary">确认添加</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="js/admin.js"></script>
+</body>
+</html>
